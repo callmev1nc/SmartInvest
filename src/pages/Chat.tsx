@@ -1,0 +1,291 @@
+import { useState, useEffect, useRef } from 'react';
+import { useUser } from '@/contexts/UserContext';
+import { chatWithUmaStream } from '@/services/uma';
+import { getWelcomeMessage } from '@/constants/uma';
+import { UMA_SUGGESTED_QUESTIONS } from '@/constants/uma';
+import './Chat.css';
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date | string;
+}
+
+export default function Chat() {
+  const { userName, riskProfile, setUserName, isOnboardingComplete } = useUser();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputText, setInputText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [showNameModal, setShowNameModal] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Show name modal if onboarding not complete
+  useEffect(() => {
+    if (!isOnboardingComplete && !showNameModal) {
+      setShowNameModal(true);
+    }
+  }, [isOnboardingComplete]);
+
+  // Load welcome message
+  useEffect(() => {
+    if (userName && messages.length === 0) {
+      const savedMessages = localStorage.getItem('smartinvest_chat_history');
+      if (savedMessages) {
+        try {
+          const parsed = JSON.parse(savedMessages);
+          // Convert timestamp strings back to Date objects
+          const messagesWithDates = parsed.map((msg: Message) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp),
+          }));
+          setMessages(messagesWithDates);
+        } catch (error) {
+          console.error('Failed to parse chat history:', error);
+        }
+      } else {
+        // Add welcome message
+        const welcomeMsg: Message = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: getWelcomeMessage(userName),
+          timestamp: new Date(),
+        };
+        setMessages([welcomeMsg]);
+      }
+    }
+  }, [userName]);
+
+  // Save chat history
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('smartinvest_chat_history', JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const sendMessage = async (text?: string) => {
+    const messageToSend = text || inputText;
+
+    if (!messageToSend.trim() || !userName) return;
+
+    // Add user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: messageToSend.trim(),
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInputText('');
+    setIsTyping(true);
+
+    try {
+      // Stream Uma's response
+      const umaMessageId = (Date.now() + 1).toString();
+      let umaResponse = '';
+
+      // Create placeholder for Uma's response
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: umaMessageId,
+          role: 'assistant',
+          content: '',
+          timestamp: new Date(),
+        },
+      ]);
+
+      // Stream the response
+      for await (const chunk of chatWithUmaStream(
+        messageToSend,
+        userName,
+        messages,
+        riskProfile
+      )) {
+        umaResponse += chunk;
+
+        // Update the message in real-time
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === umaMessageId
+              ? { ...msg, content: umaResponse }
+              : msg
+          )
+        );
+      }
+
+      setIsTyping(false);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setIsTyping(false);
+
+      // Add error message from Uma
+      const errorMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `Hi ${userName}! I'm having trouble connecting right now. Please check your internet connection and try again.`,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMsg]);
+    }
+  };
+
+  const handleSuggestedQuestion = (question: string) => {
+    setInputText(question);
+    sendMessage(question);
+  };
+
+  if (!userName) {
+    return (
+      <div className="name-modal-overlay">
+        <div className="name-modal">
+          <div className="name-modal-avatar">🤖</div>
+          <h2 className="name-modal-title">Welcome to SmartINvest!</h2>
+          <p className="name-modal-subtitle">
+            I'm Uma, your personal AI investment advisor. What should I call you?
+          </p>
+          <input
+            type="text"
+            className="name-input"
+            placeholder="Enter your name"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                const target = e.target as HTMLInputElement;
+                if (target.value.trim()) {
+                  setUserName(target.value.trim());
+                  setShowNameModal(false);
+                }
+              }
+            }}
+            autoFocus
+          />
+          <button
+            className="name-submit-btn"
+            onClick={() => {
+              const input = document.querySelector('.name-input') as HTMLInputElement;
+              if (input?.value.trim()) {
+                setUserName(input.value.trim());
+                setShowNameModal(false);
+              }
+            }}
+          >
+            Start Chatting
+          </button>
+          <button
+            className="name-skip-btn"
+            onClick={() => setShowNameModal(false)}
+          >
+            Skip for now
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="chat">
+      <div className="chat-container">
+        {/* Messages */}
+        <div className="messages">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`message ${message.role === 'user' ? 'user-message' : 'uma-message'}`}
+            >
+              {message.role === 'assistant' && (
+                <div className="message-sender">Uma</div>
+              )}
+              <div className="message-bubble">
+                <p className="message-text">{message.content}</p>
+              </div>
+              <span className="message-time">
+                {formatTime(message.timestamp)}
+              </span>
+            </div>
+          ))}
+
+          {isTyping && (
+            <div className="message uma-message">
+              <div className="message-bubble">
+                <div className="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Suggested Questions */}
+        {messages.length < 3 && (
+          <div className="suggested-questions">
+            <p className="suggested-title">💬 Ask Uma:</p>
+            <div className="suggested-chips">
+              {UMA_SUGGESTED_QUESTIONS.map((question, index) => (
+                <button
+                  key={index}
+                  className="suggested-chip"
+                  onClick={() => handleSuggestedQuestion(question)}
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Input */}
+        <div className="chat-input-container">
+          <textarea
+            className="chat-input"
+            placeholder="Ask Uma anything about investing..."
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+            rows={1}
+          />
+          <button
+            className="send-button"
+            onClick={() => sendMessage()}
+            disabled={!inputText.trim() || isTyping}
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function formatTime(date: Date | string): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  // Check if date is valid
+  if (isNaN(dateObj.getTime())) {
+    return 'Just now';
+  }
+
+  const now = new Date();
+  const diff = now.getTime() - dateObj.getTime();
+  const minutes = Math.floor(diff / 60000);
+
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1440) return `${Math.floor(minutes / 60)}h ago`;
+  return dateObj.toLocaleDateString();
+}
