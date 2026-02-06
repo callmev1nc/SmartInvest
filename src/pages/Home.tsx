@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Bot,
   BarChart3,
@@ -14,26 +15,27 @@ import './Home.css';
 
 export default function Home() {
   const { userName, riskProfile } = useUser();
+  const { t } = useLanguage();
 
   const features = [
     {
       id: '1',
-      title: 'Chat with Uma',
-      description: 'Get personalized investment advice',
+      titleKey: 'featureChatTitle',
+      descKey: 'featureChatDesc',
       icon: Bot,
       link: '/chat',
     },
     {
       id: '2',
-      title: 'Risk Assessment',
-      description: 'Discover your investor profile',
+      titleKey: 'featureQuizTitle',
+      descKey: 'featureQuizDesc',
       icon: BarChart3,
       link: '/quiz',
     },
     {
       id: '3',
-      title: 'Investment Options',
-      description: 'Explore investment opportunities',
+      titleKey: 'featureExploreTitle',
+      descKey: 'featureExploreDesc',
       icon: TrendingUp,
       link: '/explore',
     },
@@ -46,10 +48,10 @@ export default function Home() {
         <div className="hero-content">
           <Sparkles className="hero-sparkle" size={48} strokeWidth={1.5} />
           <h1 className="hero-title">
-            {userName ? `Welcome back, ${userName}!` : 'Welcome to SmartInvest'}
+            {userName ? t('welcomeBack', { name: userName }) : t('welcomeToApp')}
           </h1>
           <p className="hero-subtitle">
-            Your personal AI investment advisor is ready to help
+            {t('heroSubtitle')}
           </p>
         </div>
       </section>
@@ -59,9 +61,9 @@ export default function Home() {
         <div className="banner profile-banner">
           <Target className="banner-icon" size={32} strokeWidth={2} />
           <div className="banner-content">
-            <h3 className="banner-title">Your Risk Profile</h3>
+            <h3 className="banner-title">{t('yourRiskProfile')}</h3>
             <p className="banner-text">
-              {riskProfile.charAt(0).toUpperCase() + riskProfile.slice(1)} Investor
+              {riskProfile.charAt(0).toUpperCase() + riskProfile.slice(1)} {t('investor')}
             </p>
           </div>
         </div>
@@ -69,9 +71,9 @@ export default function Home() {
         <Link to="/quiz" className="banner cta-banner">
           <ClipboardList className="banner-icon" size={32} strokeWidth={2} />
           <div className="banner-content">
-            <h3 className="banner-title">Take the Quiz</h3>
+            <h3 className="banner-title">{t('takeQuiz')}</h3>
             <p className="banner-text">
-              Discover your investor profile in 5 minutes
+              {t('takeQuizDesc')}
             </p>
           </div>
           <ArrowRight className="banner-arrow" size={20} strokeWidth={2} />
@@ -79,15 +81,15 @@ export default function Home() {
       )}
 
       {/* Features Grid */}
-      <h2 className="section-title">Get Started</h2>
+      <h2 className="section-title">{t('getStarted')}</h2>
       <div className="features-grid">
         {features.map((feature) => (
           <Link key={feature.id} to={feature.link} className="feature-card">
             <div className="feature-icon-wrapper">
               <feature.icon size={32} strokeWidth={2} className="feature-icon" />
             </div>
-            <h3 className="feature-title">{feature.title}</h3>
-            <p className="feature-description">{feature.description}</p>
+            <h3 className="feature-title">{t(feature.titleKey)}</h3>
+            <p className="feature-description">{t(feature.descKey)}</p>
             <ArrowRight className="feature-arrow" size={18} strokeWidth={2} />
           </Link>
         ))}
@@ -97,20 +99,18 @@ export default function Home() {
       <section className="tips-section">
         <h2 className="section-title">
           <Lightbulb size={24} strokeWidth={2} className="section-icon" />
-          Tips for Your Savings
+          {t('tipsTitle')}
         </h2>
         <div className="tip-card">
-          <h3 className="tip-title">Start Small, Think Big</h3>
+          <h3 className="tip-title">{t('tip1Title')}</h3>
           <p className="tip-text">
-            Even small investments can grow significantly over time. The key is consistency
-            and starting early.
+            {t('tip1Text')}
           </p>
         </div>
         <div className="tip-card">
-          <h3 className="tip-title">Diversify Your Portfolio</h3>
+          <h3 className="tip-title">{t('tip2Title')}</h3>
           <p className="tip-text">
-            Don't put all your eggs in one basket. Spread investments across different
-            asset classes to manage risk.
+            {t('tip2Text')}
           </p>
         </div>
       </section>

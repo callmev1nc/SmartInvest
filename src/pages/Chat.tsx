@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@/contexts/UserContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { chatWithUmaStream } from '@/services/uma';
+import { translateText } from '@/services/translation';
 import { getWelcomeMessage } from '@/constants/uma';
 import { UMA_SUGGESTED_QUESTIONS } from '@/constants/uma';
 import './Chat.css';
@@ -14,6 +16,7 @@ interface Message {
 
 export default function Chat() {
   const { userName, riskProfile, setUserName, isOnboardingComplete } = useUser();
+  const { language, t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -120,6 +123,18 @@ export default function Chat() {
         );
       }
 
+      // Translate the response if not in English
+      if (language !== 'en') {
+        const translatedResponse = await translateText(umaResponse, language);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === umaMessageId
+              ? { ...msg, content: translatedResponse }
+              : msg
+          )
+        );
+      }
+
       setIsTyping(false);
     } catch (error) {
       console.error('Error sending message:', error);
@@ -147,14 +162,14 @@ export default function Chat() {
       <div className="name-modal-overlay">
         <div className="name-modal">
           <div className="name-modal-avatar">🤖</div>
-          <h2 className="name-modal-title">Welcome to SmartInvest!</h2>
+          <h2 className="name-modal-title">{t('welcomeToAppChat')}</h2>
           <p className="name-modal-subtitle">
-            I'm Uma, your personal AI investment advisor. What should I call you?
+            {t('chatSubtitle')}
           </p>
           <input
             type="text"
             className="name-input"
-            placeholder="Enter your name"
+            placeholder={t('enterName')}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 const target = e.target as HTMLInputElement;
@@ -176,13 +191,13 @@ export default function Chat() {
               }
             }}
           >
-            Start Chatting
+            {t('startChatting')}
           </button>
           <button
             className="name-skip-btn"
             onClick={() => setShowNameModal(false)}
           >
-            Skip for now
+            {t('skipForNow')}
           </button>
         </div>
       </div>
@@ -229,7 +244,7 @@ export default function Chat() {
         {/* Suggested Questions */}
         {messages.length < 3 && (
           <div className="suggested-questions">
-            <p className="suggested-title">💬 Ask Uma:</p>
+            <p className="suggested-title">{t('askUma')}</p>
             <div className="suggested-chips">
               {UMA_SUGGESTED_QUESTIONS.map((question, index) => (
                 <button
@@ -248,7 +263,7 @@ export default function Chat() {
         <div className="chat-input-container">
           <textarea
             className="chat-input"
-            placeholder="Ask Uma anything about investing..."
+            placeholder={t('typeMessage')}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={(e) => {
@@ -264,7 +279,7 @@ export default function Chat() {
             onClick={() => sendMessage()}
             disabled={!inputText.trim() || isTyping}
           >
-            Send
+            {t('send')}
           </button>
         </div>
       </div>
