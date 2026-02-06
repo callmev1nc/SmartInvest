@@ -24,7 +24,7 @@ export const INVESTMENT_TYPES: InvestmentType[] = [
     riskLevel: 1,
     expectedReturn: '4-6% per annum',
     liquidity: 'Low (locked-in period)',
-    suitable_profiles: ['conservative', 'moderate'],
+    suitableProfiles: ['conservative', 'moderate'],
   },
   {
     id: 'money-market-fund',
@@ -34,7 +34,7 @@ export const INVESTMENT_TYPES: InvestmentType[] = [
     riskLevel: 2,
     expectedReturn: '5-7% per annum',
     liquidity: 'High (easy withdrawal)',
-    suitable_profiles: ['conservative', 'moderate'],
+    suitableProfiles: ['conservative', 'moderate'],
   },
   {
     id: 'government-bonds',
@@ -44,7 +44,7 @@ export const INVESTMENT_TYPES: InvestmentType[] = [
     riskLevel: 2,
     expectedReturn: '5-8% per annum',
     liquidity: 'Medium (can be sold)',
-    suitable_profiles: ['conservative', 'moderate', 'growth'],
+    suitableProfiles: ['conservative', 'moderate', 'growth'],
   },
   {
     id: 'balanced-fund',
@@ -54,7 +54,7 @@ export const INVESTMENT_TYPES: InvestmentType[] = [
     riskLevel: 4,
     expectedReturn: '8-12% per annum',
     liquidity: 'High (daily NAV)',
-    suitable_profiles: ['moderate'],
+    suitableProfiles: ['moderate'],
   },
   {
     id: 'index-fund',
@@ -64,7 +64,7 @@ export const INVESTMENT_TYPES: InvestmentType[] = [
     riskLevel: 5,
     expectedReturn: '10-15% per annum (avg)',
     liquidity: 'High (trade anytime)',
-    suitable_profiles: ['moderate', 'growth'],
+    suitableProfiles: ['moderate', 'growth'],
   },
   {
     id: 'growth-fund',
@@ -74,7 +74,7 @@ export const INVESTMENT_TYPES: InvestmentType[] = [
     riskLevel: 7,
     expectedReturn: '12-18% per annum',
     liquidity: 'High (daily NAV)',
-    suitable_profiles: ['growth'],
+    suitableProfiles: ['growth'],
   },
 ];
 
@@ -83,6 +83,11 @@ export interface RiskProfileInfo {
   name: string;
   description: string;
   characteristics: string[];
+  recommendedAllocation: {
+    cash: number;
+    bonds: number;
+    stocks: number;
+  };
 }
 
 export const RISK_PROFILES: Record<RiskProfile, RiskProfileInfo> = {
@@ -96,6 +101,11 @@ export const RISK_PROFILES: Record<RiskProfile, RiskProfileInfo> = {
       'Short to medium investment horizon',
       'Peace of mind is important',
     ],
+    recommendedAllocation: {
+      cash: 30,
+      bonds: 50,
+      stocks: 20,
+    },
   },
   moderate: {
     id: 'moderate',
@@ -107,6 +117,11 @@ export const RISK_PROFILES: Record<RiskProfile, RiskProfileInfo> = {
       'Medium to long investment horizon',
       'Seek balance of growth and safety',
     ],
+    recommendedAllocation: {
+      cash: 10,
+      bonds: 40,
+      stocks: 50,
+    },
   },
   growth: {
     id: 'growth',
@@ -118,5 +133,10 @@ export const RISK_PROFILES: Record<RiskProfile, RiskProfileInfo> = {
       'Long investment horizon (5+ years)',
       'Seek maximum growth potential',
     ],
+    recommendedAllocation: {
+      cash: 5,
+      bonds: 15,
+      stocks: 80,
+    },
   },
 };
