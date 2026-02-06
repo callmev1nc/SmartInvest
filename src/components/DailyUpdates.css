@@ -1,0 +1,344 @@
+/* Daily Updates Container */
+.daily-updates {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.updates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.updates-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.updates-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.updates-date {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.refresh-button {
+  padding: 0.5rem 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading State */
+.updates-loading {
+  text-align: center;
+  padding: 3rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 1rem;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.updates-loading p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Error State */
+.updates-error {
+  text-align: center;
+  padding: 2rem;
+}
+
+.updates-error p {
+  color: var(--error);
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  padding: 0.75rem 1.5rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Summary */
+.updates-summary {
+  background: var(--background-secondary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.updates-summary p {
+  margin: 0 0 0.5rem 0;
+  color: var(--text);
+}
+
+.disclaimer {
+  font-size: 0.875rem !important;
+  color: var(--text-secondary) !important;
+  font-style: italic;
+}
+
+/* Markets Grid */
+.markets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Market Card */
+.market-card {
+  background: var(--background-secondary);
+  padding: 1.25rem;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+  transition: all 0.2s;
+}
+
+.market-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.market-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.market-icon {
+  font-size: 1.5rem;
+}
+
+.market-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  flex: 1;
+}
+
+.market-trend {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: var(--background);
+}
+
+.market-summary {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 0.75rem 0;
+}
+
+.market-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.market-points li {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  padding: 0.25rem 0;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.market-points li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Opportunities Section */
+.opportunities-section {
+  margin-top: 2rem;
+}
+
+.opportunities-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 1.5rem 0;
+}
+
+.opportunities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+/* Opportunity Card */
+.opportunity-card {
+  background: var(--background-secondary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+  transition: all 0.2s;
+}
+
+.opportunity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.opportunity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.opportunity-category {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.opportunity-action {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+}
+
+.opportunity-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.5rem 0;
+}
+
+.opportunity-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
+
+.opportunity-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.detail-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.detail-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.opportunity-reason {
+  background: var(--background);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.reason-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.reason-text {
+  color: var(--text-secondary);
+}
+
+.opportunity-disclaimer {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .daily-updates {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  .updates-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .updates-title {
+    font-size: 1.5rem;
+  }
+
+  .markets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .opportunities-grid {
+    grid-template-columns: 1fr;
+  }
+}

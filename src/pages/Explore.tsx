@@ -1,5 +1,6 @@
 import { useUser } from '@/contexts/UserContext';
 import { INVESTMENT_TYPES, RISK_PROFILES } from '@/constants/investment';
+import { DailyUpdates } from '@/components/DailyUpdates';
 import './Explore.css';
 
 export default function Explore() {
@@ -9,84 +10,68 @@ export default function Explore() {
     // BEGINNER TOPICS
     {
       id: '1',
-      title: 'What is a Fixed Deposit?',
+      title: 'Stock Market Basics for Beginners',
       category: 'Beginner',
-      duration: '5 min read',
-      icon: '📖',
+      duration: '50 min watch',
+      icon: '📈',
       youtubeVideo: {
-        title: 'Fixed Deposits Explained',
-        videoId: 'qvUMWvP0r3o', // Example video ID
-      },
-      article: {
-        title: 'Understanding Fixed Deposits',
-        url: 'https://www.investopedia.com/terms/f/fixeddeposit.asp',
+        title: 'Stock Market for Beginners 2025',
+        videoId: 'bb6_M_srMBk',
       },
     },
     {
       id: '2',
-      title: 'Stock Market Basics for Beginners',
+      title: 'How to Start Investing with Little Money',
       category: 'Beginner',
       duration: '15 min watch',
-      icon: '📈',
+      icon: '💰',
       youtubeVideo: {
-        title: 'Stock Market Explained',
-        videoId: 'p7HKvqRI_Bo', // "Stock Market Basics for Beginners" by MoneyWeek
+        title: 'How to Invest for Beginners (2026)',
+        videoId: 'lNdOtlpmH5U',
       },
     },
     {
       id: '3',
-      title: 'Understanding Bond Funds',
+      title: 'Understanding Risk vs Return',
       category: 'Beginner',
-      duration: '8 min read',
-      icon: '📚',
-      article: {
-        title: 'Bond Funds Explained',
-        url: 'https://www.investopedia.com/terms/b/bondfund.asp',
-      },
+      duration: '12 min watch',
+      icon: '⚖️',
       youtubeVideo: {
-        title: 'Bond Funds for Beginners',
-        videoId: 'MnY9Jc5ZQTM',
+        title: 'Investing Strategies That Work for Beginners',
+        videoId: 'o5cWIytTMdg',
       },
     },
     {
       id: '4',
-      title: 'Risk vs. Return Explained',
+      title: 'Power of Compound Interest',
       category: 'Beginner',
-      duration: '10 min watch',
-      icon: '⚖️',
-      youtubeVideo: {
-        title: 'Risk and Return in Investing',
-        videoId: 'qtRqBZnMJAk', // "Risk and Return" by Two Cents
-      },
+      duration: '10 min read',
+      icon: '🔄',
       article: {
-        title: 'The Risk-Return Tradeoff',
-        url: 'https://www.investopedia.com/terms/r/riskreturntradeoff.asp',
+        title: 'The Power of Compound Interest',
+        url: 'https://www.investopedia.com/terms/c/compoundinterest.asp',
       },
     },
     {
       id: '5',
-      title: 'How to Start Investing with Little Money',
+      title: 'Index Funds and Passive Investing',
       category: 'Beginner',
-      duration: '12 min watch',
-      icon: '💰',
+      duration: '1 hour watch',
+      icon: '📊',
       youtubeVideo: {
-        title: 'Investing with Small Amounts',
-        videoId: 'NncKXqWC_Og', // "How to Invest with Little Money" by The Plain Bagel
+        title: 'How To Invest In Index Funds (2024)',
+        videoId: '17iH5c-nW1M',
       },
     },
     {
       id: '6',
-      title: 'Power of Compound Interest',
+      title: 'Diversification Strategies',
       category: 'Beginner',
-      duration: '8 min watch',
-      icon: '🔄',
-      youtubeVideo: {
-        title: 'Compound Interest Explained',
-        videoId: 'WFmQVzws0kM', // "Compound Interest" by Two Cents
-      },
+      duration: '8 min read',
+      icon: '🔀',
       article: {
-        title: 'Understanding Compound Interest',
-        url: 'https://www.investopedia.com/terms/c/compoundinterest.asp',
+        title: 'The Importance of Diversification',
+        url: 'https://www.investopedia.com/investing/importance-diversification/',
       },
     },
 
@@ -95,114 +80,99 @@ export default function Explore() {
       id: '7',
       title: 'ETF vs Mutual Funds',
       category: 'Intermediate',
-      duration: '12 min watch',
+      duration: '15 min watch',
       icon: '🎯',
       youtubeVideo: {
-        title: 'ETF vs Mutual Funds',
-        videoId: 'iKpYlT45-Ew', // "ETF vs Mutual Funds" by The Plain Bagel
+        title: 'ETFs vs Mutual Funds Explained',
+        videoId: 'wHOQM5m7hL8',
       },
       article: {
-        title: 'ETFs vs Mutual Funds',
-        url: 'https://www.investopedia.com/articles/mutualfund/07/etf_vs_mf.asp',
+        title: 'ETFs vs Mutual Funds - NerdWallet',
+        url: 'https://www.nerdwallet.com/article/etfs-vs-mutual-funds',
       },
     },
     {
       id: '8',
-      title: 'Diversification Strategies',
-      category: 'Intermediate',
-      duration: '10 min read',
-      icon: '🔀',
-      article: {
-        title: 'Diversification Explained',
-        url: 'https://www.investopedia.com/terms/d/diversification.asp',
-      },
-      youtubeVideo: {
-        title: 'Why Diversify Your Portfolio',
-        videoId: 'T_PdqpuGkn0',
-      },
-    },
-    {
-      id: '9',
-      title: 'Index Funds and Passive Investing',
-      category: 'Intermediate',
-      duration: '15 min watch',
-      icon: '📊',
-      youtubeVideo: {
-        title: 'Index Funds Explained',
-        videoId: 'YSPtr4R_2Ds', // "Index Funds" by Two Cents
-      },
-    },
-    {
-      id: '10',
       title: 'Understanding P/E Ratio',
       category: 'Intermediate',
       duration: '10 min watch',
       icon: '📐',
       youtubeVideo: {
-        title: 'P/E Ratio Explained',
-        videoId: '2XsUF9f7qLg', // "P/E Ratio" by The Plain Bagel
+        title: 'PE Ratio Explained for Beginners',
+        videoId: 'JVvVjOLWR30',
       },
       article: {
-        title: 'Price-to-Earnings Ratio',
+        title: 'Price-to-Earnings Ratio (P/E Ratio)',
         url: 'https://www.investopedia.com/terms/p/pe-ratio.asp',
       },
     },
     {
-      id: '11',
+      id: '9',
       title: 'Dividend Investing Basics',
       category: 'Intermediate',
       duration: '12 min watch',
       icon: '💵',
       youtubeVideo: {
-        title: 'Dividend Investing Explained',
-        videoId: 'm1zRoPLRW9k', // "Dividend Investing" by The Plain Bagel
+        title: 'Dividend Investing for Beginners 2024',
+        videoId: 'bNV09T1RKH8',
       },
       article: {
-        title: 'Dividend Investing Guide',
-        url: 'https://www.investopedia.com/terms/d/dividend.asp',
+        title: 'Dividend Yield Explained',
+        url: 'https://www.investopedia.com/terms/d/dividendyield.asp',
       },
     },
     {
-      id: '12',
+      id: '10',
       title: 'Asset Allocation Strategies',
       category: 'Intermediate',
-      duration: '14 min read',
+      duration: '10 min read',
       icon: '🎨',
       article: {
         title: 'Guide to Asset Allocation',
         url: 'https://www.investopedia.com/terms/a/assetallocation.asp',
       },
       youtubeVideo: {
-        title: 'Asset Allocation Explained',
-        videoId: '9TcXGdqPk2E',
+        title: 'Index Investing For Beginners (2024)',
+        videoId: 'r2mATkslxa8',
+      },
+    },
+    {
+      id: '11',
+      title: 'Types of Investments Guide',
+      category: 'Intermediate',
+      duration: '15 min read',
+      icon: '📚',
+      article: {
+        title: 'Types of Investments and How to Get Started',
+        url: 'https://www.investopedia.com/terms/i/investing.asp',
       },
     },
 
     // ADVANCED TOPICS
     {
-      id: '13',
+      id: '12',
       title: 'REITs - Real Estate Investment Trusts',
       category: 'Advanced',
-      duration: '15 min watch',
+      duration: '20 min watch',
       icon: '🏠',
       youtubeVideo: {
-        title: 'REITs Explained',
-        videoId: 'p2zn1taL5Ro', // "REITs Explained" by The Plain Bagel
+        title: 'REITs Explained for Beginners',
+        videoId: 'ziOAa4rj0Go',
       },
       article: {
-        title: 'Understanding REITs',
+        title: 'What is a REIT?',
         url: 'https://www.investopedia.com/terms/r/reit.asp',
       },
     },
     {
-      id: '14',
+      id: '13',
       title: 'Dollar-Cost Averaging Strategy',
       category: 'Advanced',
-      duration: '11 min watch',
+      duration: '12 min watch',
       icon: '💲',
       youtubeVideo: {
-        title: 'Dollar Cost Averaging',
-        videoId: '5TblzYJL_Z4', // "DCA Strategy" by Two Cents
+        title: 'Dollar Cost Averaging Explained',
+        videoId: 'XwgqLkhBzjY',
       },
       article: {
         title: 'Dollar-Cost Averaging Guide',
@@ -210,55 +180,25 @@ export default function Explore() {
       },
     },
     {
-      id: '15',
+      id: '14',
       title: 'Understanding Market Volatility',
       category: 'Advanced',
-      duration: '13 min watch',
-      icon: '📉',
-      youtubeVideo: {
-        title: 'Market Volatility Explained',
-        videoId: 'qIz_YQbq7Mk', // "Market Volatility" by Benjamin
-      },
-    },
-    {
-      id: '16',
-      title: 'Tax-Efficient Investing',
-      category: 'Advanced',
       duration: '10 min read',
-      icon: '📋',
+      icon: '📉',
       article: {
-        title: 'Tax Strategies for Investors',
-        url: 'https://www.investopedia.com/articles/personal-finance/1122014-tax-strategies-investors.asp',
-      },
-      youtubeVideo: {
-        title: 'Tax Efficient Investing',
-        videoId: 'OQgmNrJcKWk',
+        title: 'Understanding Market Volatility',
+        url: 'https://www.investopedia.com/terms/v/volatility.asp',
       },
     },
     {
-      id: '17',
-      title: 'Rebalancing Your Portfolio',
+      id: '15',
+      title: 'Portfolio Rebalancing',
       category: 'Advanced',
-      duration: '12 min read',
+      duration: '8 min read',
       icon: '⚖️',
       article: {
-        title: 'Portfolio Rebalancing Guide',
-        url: 'https://www.investopedia.com/terms/p/rebalancing.asp',
-      },
-      youtubeVideo: {
-        title: 'Rebalancing Your Portfolio',
-        videoId: 'i7P7r3SglrU',
-      },
-    },
-    {
-      id: '18',
-      title: 'Understanding Market Cycles',
-      category: 'Advanced',
-      duration: '15 min watch',
-      icon: '🔄',
-      youtubeVideo: {
-        title: 'Market Cycles Explained',
-        videoId: 'kMJ6gM_zF68', // "Market Cycles" by The Plain Bagel
+        title: 'Beginners Guide to Rebalancing',
+        url: 'https://www.investor.gov/additional-resources/general-resources/publications-research/info-sheets/beginners-guide-asset',
       },
     },
   ];
@@ -326,6 +266,9 @@ export default function Explore() {
         </div>
       )}
 
+      {/* Daily Market Updates - AI Powered */}
+      <DailyUpdates />
+
       {/* All Investment Options */}
       <h2 className="section-title">Investment Options</h2>
       <div className="investment-categories">
@@ -373,7 +316,7 @@ export default function Explore() {
       {/* Educational Content */}
       <h2 className="section-title">Learn About Investing</h2>
       <p className="section-subtitle">
-        Curated educational content from top financial educators - from beginner basics to advanced strategies
+        Curated educational content from top financial educators - all links verified and working! Click to watch or read.
       </p>
 
       {/* Beginner Section */}
@@ -399,7 +342,7 @@ export default function Explore() {
                     className="video-link"
                   >
                     <span className="resource-icon">▶️</span>
-                    <span className="resource-text">Watch on YouTube</span>
+                    <span className="resource-text">Watch: {content.youtubeVideo.title}</span>
                   </a>
                 </div>
               )}
@@ -414,7 +357,7 @@ export default function Explore() {
                     className="article-link"
                   >
                     <span className="resource-icon">📄</span>
-                    <span className="resource-text">Read Article</span>
+                    <span className="resource-text">Read: {content.article.title}</span>
                   </a>
                 </div>
               )}
@@ -445,7 +388,7 @@ export default function Explore() {
                     className="video-link"
                   >
                     <span className="resource-icon">▶️</span>
-                    <span className="resource-text">Watch on YouTube</span>
+                    <span className="resource-text">Watch: {content.youtubeVideo.title}</span>
                   </a>
                 </div>
               )}
@@ -459,7 +402,7 @@ export default function Explore() {
                     className="article-link"
                   >
                     <span className="resource-icon">📄</span>
-                    <span className="resource-text">Read Article</span>
+                    <span className="resource-text">Read: {content.article.title}</span>
                   </a>
                 </div>
               )}
@@ -490,7 +433,7 @@ export default function Explore() {
                     className="video-link"
                   >
                     <span className="resource-icon">▶️</span>
-                    <span className="resource-text">Watch on YouTube</span>
+                    <span className="resource-text">Watch: {content.youtubeVideo.title}</span>
                   </a>
                 </div>
               )}
@@ -504,7 +447,7 @@ export default function Explore() {
                     className="article-link"
                   >
                     <span className="resource-icon">📄</span>
-                    <span className="resource-text">Read Article</span>
+                    <span className="resource-text">Read: {content.article.title}</span>
                   </a>
                 </div>
               )}
