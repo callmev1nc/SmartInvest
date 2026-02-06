@@ -23,7 +23,7 @@ const MODEL = 'gemini-3-pro-preview';
  * Initialize the Google AI client
  */
 function getAIClient() {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
     throw new Error('VITE_GEMINI_API_KEY is not set in environment variables');
@@ -46,13 +46,10 @@ function getTools() {
 }
 
 /**
- * Get the configuration with thinking and tools
+ * Get the configuration with tools only
  */
 function getConfig() {
   return {
-    thinkingConfig: {
-      thinkingLevel: 'HIGH',
-    },
     tools: getTools(),
   };
 }
@@ -77,11 +74,17 @@ function createPersonalizedPrompt(
 ## User's Message
 ${userMessage}
 
-Remember to:
-1. Address ${userName} by name in your response
-2. ${riskProfile ? `Tailor advice for a ${riskProfile} investor` : 'Encourage them to complete the risk assessment'}
-3. Be friendly, educational, and include appropriate disclaimers
-4. Keep responses concise but informative (2-3 paragraphs max)`;
+IMPORTANT INSTRUCTIONS:
+1. Address ${userName} by name at the start
+2. ${riskProfile ? `ALL recommendations must match ${riskProfile} risk tolerance` : 'Encourage completing risk assessment first'}
+3. Provide SPECIFIC investment options with exact amounts, expected returns, and timeframes
+4. Use the format shown in your system prompt with Option 1, Option 2, etc. (plain text, no bold)
+5. Always include expected returns (percentage or amount)
+6. Always include time horizon (short/medium/long term)
+7. Always include risk level (1-10 scale)
+8. Keep explanations brief but complete
+9. Include standard disclaimer at the end
+10. NEVER use bold formatting, markdown headers, or special characters`;
 
   // Add conversation context
   if (conversationHistory.length > 0) {
@@ -244,7 +247,7 @@ Please provide a warm, welcoming message (2-3 sentences) introducing yourself as
  * Validate that the API key is configured
  */
 export function validateUmaConfiguration(): { isValid: boolean; error?: string } {
-  if (!import.meta.env.VITE_GEMINI_API_KEY) {
+  if (!(import.meta as any).env.VITE_GEMINI_API_KEY) {
     return {
       isValid: false,
       error: 'VITE_GEMINI_API_KEY is not set. Please add it to your .env file.',

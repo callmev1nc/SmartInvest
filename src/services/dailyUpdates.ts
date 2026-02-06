@@ -109,9 +109,6 @@ IMPORTANT:
 Respond ONLY with valid JSON, no additional text.`;
 
     const config = {
-      thinkingConfig: {
-        thinkingLevel: 'HIGH',
-      },
       tools: [
         {
           googleSearch: {},
