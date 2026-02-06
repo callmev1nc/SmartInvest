@@ -147,7 +147,7 @@ export default function Chat() {
       <div className="name-modal-overlay">
         <div className="name-modal">
           <div className="name-modal-avatar">🤖</div>
-          <h2 className="name-modal-title">Welcome to SmartINvest!</h2>
+          <h2 className="name-modal-title">Welcome to SmartInvest!</h2>
           <p className="name-modal-subtitle">
             I'm Uma, your personal AI investment advisor. What should I call you?
           </p>

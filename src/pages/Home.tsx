@@ -1,6 +1,15 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
-import { Colors } from '@/constants/theme';
+import {
+  Bot,
+  BarChart3,
+  TrendingUp,
+  Target,
+  ClipboardList,
+  Lightbulb,
+  ArrowRight,
+  Sparkles
+} from 'lucide-react';
 import './Home.css';
 
 export default function Home() {
@@ -11,21 +20,21 @@ export default function Home() {
       id: '1',
       title: 'Chat with Uma',
       description: 'Get personalized investment advice',
-      icon: '🤖',
+      icon: Bot,
       link: '/chat',
     },
     {
       id: '2',
       title: 'Risk Assessment',
       description: 'Discover your investor profile',
-      icon: '📊',
+      icon: BarChart3,
       link: '/quiz',
     },
     {
       id: '3',
       title: 'Investment Options',
       description: 'Explore investment opportunities',
-      icon: '💰',
+      icon: TrendingUp,
       link: '/explore',
     },
   ];
@@ -34,18 +43,21 @@ export default function Home() {
     <div className="home">
       {/* Hero Section */}
       <section className="hero">
-        <h1 className="hero-title">
-          {userName ? `Welcome back, ${userName}!` : 'Welcome to SmartINvest'}
-        </h1>
-        <p className="hero-subtitle">
-          Your personal AI investment advisor is ready to help
-        </p>
+        <div className="hero-content">
+          <Sparkles className="hero-sparkle" size={48} strokeWidth={1.5} />
+          <h1 className="hero-title">
+            {userName ? `Welcome back, ${userName}!` : 'Welcome to SmartInvest'}
+          </h1>
+          <p className="hero-subtitle">
+            Your personal AI investment advisor is ready to help
+          </p>
+        </div>
       </section>
 
       {/* Risk Profile Banner */}
       {riskProfile ? (
         <div className="banner profile-banner">
-          <span className="banner-icon">🎯</span>
+          <Target className="banner-icon" size={32} strokeWidth={2} />
           <div className="banner-content">
             <h3 className="banner-title">Your Risk Profile</h3>
             <p className="banner-text">
@@ -55,13 +67,14 @@ export default function Home() {
         </div>
       ) : (
         <Link to="/quiz" className="banner cta-banner">
-          <span className="banner-icon">📋</span>
+          <ClipboardList className="banner-icon" size={32} strokeWidth={2} />
           <div className="banner-content">
             <h3 className="banner-title">Take the Quiz</h3>
             <p className="banner-text">
               Discover your investor profile in 5 minutes
             </p>
           </div>
+          <ArrowRight className="banner-arrow" size={20} strokeWidth={2} />
         </Link>
       )}
 
@@ -70,16 +83,22 @@ export default function Home() {
       <div className="features-grid">
         {features.map((feature) => (
           <Link key={feature.id} to={feature.link} className="feature-card">
-            <span className="feature-icon">{feature.icon}</span>
+            <div className="feature-icon-wrapper">
+              <feature.icon size={32} strokeWidth={2} className="feature-icon" />
+            </div>
             <h3 className="feature-title">{feature.title}</h3>
             <p className="feature-description">{feature.description}</p>
+            <ArrowRight className="feature-arrow" size={18} strokeWidth={2} />
           </Link>
         ))}
       </div>
 
       {/* Tips Section */}
       <section className="tips-section">
-        <h2 className="section-title">💡 Tips for Your Savings</h2>
+        <h2 className="section-title">
+          <Lightbulb size={24} strokeWidth={2} className="section-icon" />
+          Tips for Your Savings
+        </h2>
         <div className="tip-card">
           <h3 className="tip-title">Start Small, Think Big</h3>
           <p className="tip-text">

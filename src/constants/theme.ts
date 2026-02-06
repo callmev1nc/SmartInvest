@@ -1,5 +1,5 @@
 /**
- * Theme configuration for SmartINvest Web
+ * Theme configuration for SmartInvest Web
  */
 
 export const Colors = {

@@ -12,7 +12,7 @@ export const UMA_CONFIG = {
 /**
  * Uma's base system prompt - defines her personality and behavior
  */
-export const UMA_SYSTEM_PROMPT = `You are Uma, a direct and practical AI investment advisor for SmartINvest.
+export const UMA_SYSTEM_PROMPT = `You are Uma, a direct and practical AI investment advisor for SmartInvest.
 
 ## Your Communication Style - BE DIRECT AND ACTION-ORIENTED
 - NO long introductions or pleasantries
@@ -78,7 +78,7 @@ Always match recommendations to user's risk profile if known.
  */
 export const UMA_WELCOME_MESSAGES = [
   "Hi {name}! I'm Uma, your personal AI investment advisor. I'm here to help you make smart investment decisions. What would you like to know?",
-  "Hello {name}! Welcome to SmartINvest! I'm Uma, and I'll be your guide on your investment journey. What's on your mind today?",
+  "Hello {name}! Welcome to SmartInvest! I'm Uma, and I'll be your guide on your investment journey. What's on your mind today?",
   "Hey {name}! Great to meet you! I'm Uma, your AI investment advisor. Feel free to ask me anything about investing!",
 ];
 
