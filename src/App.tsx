@@ -6,23 +6,26 @@ import Quiz from './pages/Quiz';
 import Explore from './pages/Explore';
 import { UserProvider } from './contexts/UserContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 function App() {
   return (
-    <LanguageProvider>
-      <UserProvider>
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/quiz" element={<Quiz />} />
-              <Route path="/explore" element={<Explore />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
-      </UserProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <UserProvider>
+          <BrowserRouter>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route path="/quiz" element={<Quiz />} />
+                <Route path="/explore" element={<Explore />} />
+              </Routes>
+            </Layout>
+          </BrowserRouter>
+        </UserProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

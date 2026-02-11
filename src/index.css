@@ -38,6 +38,31 @@
   --radius-full: 9999px;
 }
 
+/* Dark Theme */
+[data-theme="dark"] {
+  --primary: #818CF8;
+  --primary-dark: #6366F1;
+  --primary-light: #A5B4FC;
+  --secondary: #34D399;
+  --secondary-dark: #10B981;
+  --background: #0F172A;
+  --background-secondary: #1E293B;
+  --text: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-light: #64748B;
+  --border: #334155;
+  --error: #F87171;
+  --warning: #FBBF24;
+  --success: #34D399;
+  --info: #60A5FA;
+
+  /* Chat specific colors for dark mode */
+  --chat-user: #6366F1;
+  --chat-uma: #1E293B;
+  --chat-user-text: #FFFFFF;
+  --chat-uma-text: #F1F5F9;
+}
+
 * {
   margin: 0;
   padding: 0;

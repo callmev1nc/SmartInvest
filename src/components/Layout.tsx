@@ -1,13 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, MessageSquare, ClipboardList, Compass, Hand, Languages } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Home, MessageSquare, ClipboardList, Compass, Hand, Languages, Moon, Sun } from 'lucide-react';
 import './Layout.css';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { userName } = useUser();
   const { language, setLanguage, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -18,17 +20,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <h1 className="logo">{t('appName')}</h1>
           <p className="tagline">{t('tagline')}</p>
         </div>
-        <div className="language-selector">
-          <Languages size={18} strokeWidth={2} className="language-icon" />
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as any)}
-            className="language-dropdown"
+        <div className="header-actions">
+          <button
+            onClick={toggleTheme}
+            className="theme-toggle"
+            aria-label="Toggle theme"
           >
-            <option value="en">English</option>
-            <option value="zh">中文</option>
-            <option value="vi">Tiếng Việt</option>
-          </select>
+            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+          <div className="language-selector">
+            <Languages size={18} strokeWidth={2} className="language-icon" />
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as any)}
+              className="language-dropdown"
+            >
+              <option value="en">English</option>
+              <option value="zh">中文</option>
+              <option value="vi">Tiếng Việt</option>
+            </select>
+          </div>
         </div>
       </header>
 
