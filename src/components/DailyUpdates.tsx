@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { getDailyUpdates, hasTodaysUpdates, type DailyUpdate, type MarketUpdate } from '@/services/dailyUpdates';
+import { getDailyUpdates, type DailyUpdate, type MarketUpdate } from '@/services/dailyUpdates';
 import { useUser } from '@/contexts/UserContext';
 import './DailyUpdates.css';
 

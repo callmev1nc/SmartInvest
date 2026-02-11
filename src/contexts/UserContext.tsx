@@ -2,7 +2,7 @@
  * UserContext - Manages user data including name and risk profile
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { RiskProfile } from '@/constants/investment';
 
 interface UserContextType {

@@ -4,7 +4,6 @@
  */
 
 import { GoogleGenAI } from '@google/genai';
-import { getGreeting } from '@/constants/uma';
 import type { RiskProfile } from '@/constants/investment';
 
 export interface DailyUpdate {
