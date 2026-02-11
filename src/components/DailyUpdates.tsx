@@ -14,6 +14,15 @@ export function DailyUpdates() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     loadUpdates(false);
@@ -76,12 +85,21 @@ export function DailyUpdates() {
         <h2 className="updates-title">📊 Daily Market Updates</h2>
         <div className="updates-meta">
           <span className="updates-date">
-            {new Date(updates.date).toLocaleDateString('en-US', {
+            {currentTime.toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
               day: 'numeric',
             })}
+            {' • '}
+            <span className="updates-time">
+              {currentTime.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+              })}
+            </span>
           </span>
           <button
             onClick={handleRefresh}
