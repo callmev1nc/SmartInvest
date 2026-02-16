@@ -1,12 +1,42 @@
+import { useState, useEffect } from 'react';
 import { useUser } from '@/contexts/UserContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translateText } from '@/services/translation';
 import { INVESTMENT_TYPES, RISK_PROFILES } from '@/constants/investment';
 import { DailyUpdates } from '@/components/DailyUpdates';
 import './Explore.css';
 
+interface EducationalContent {
+  id: string;
+  title: string;
+  category: string;
+  duration: string;
+  icon: string;
+  youtubeVideo?: {
+    title: string;
+    videoId: string;
+  };
+  article?: {
+    title: string;
+    url: string;
+  };
+}
+
+interface GlossaryItem {
+  term: string;
+  definition: string;
+}
+
 export default function Explore() {
   const { riskProfile } = useUser();
+  const { language } = useLanguage();
+  const [translatedContent, setTranslatedContent] = useState<{
+    educationalContent: EducationalContent[];
+    glossary: GlossaryItem[];
+    sectionTitles: Record<string, string>;
+  } | null>(null);
 
-  const educationalContent = [
+  const baseEducationalContent: EducationalContent[] = [
     // BEGINNER TOPICS
     {
       id: '1',
@@ -203,7 +233,7 @@ export default function Explore() {
     },
   ];
 
-  const glossary = [
+  const baseGlossary: GlossaryItem[] = [
     {
       term: 'Liquidity',
       definition: 'How quickly you can convert an investment to cash without losing value',
@@ -254,6 +284,94 @@ export default function Explore() {
     },
   ];
 
+  // Translate content when language changes
+  useEffect(() => {
+    const translateContent = async () => {
+      if (language === 'en') {
+        setTranslatedContent({
+          educationalContent: baseEducationalContent,
+          glossary: baseGlossary,
+          sectionTitles: {
+            investmentOptions: 'Investment Options',
+            availableInvestments: 'Available Investments',
+            learnAboutInvesting: 'Learn About Investing',
+            keyInvestmentTerms: 'Key Investment Terms',
+            beginnerTopics: 'Beginner Topics',
+            intermediateTopics: 'Intermediate Topics',
+            advancedTopics: 'Advanced Topics',
+          },
+        });
+        return;
+      }
+
+      try {
+        // Translate section titles
+        const sectionTitles = {
+          investmentOptions: await translateText('Investment Options', language as any),
+          availableInvestments: await translateText('Available Investments', language as any),
+          learnAboutInvesting: await translateText('Learn About Investing', language as any),
+          keyInvestmentTerms: await translateText('Key Investment Terms', language as any),
+          beginnerTopics: await translateText('Beginner Topics', language as any),
+          intermediateTopics: await translateText('Intermediate Topics', language as any),
+          advancedTopics: await translateText('Advanced Topics', language as any),
+        };
+
+        // Translate educational content
+        const translatedEducationalContent = await Promise.all(
+          baseEducationalContent.map(async (content) => ({
+            ...content,
+            title: await translateText(content.title, language as any),
+            category: await translateText(content.category, language as any),
+          }))
+        );
+
+        // Translate glossary
+        const translatedGlossary = await Promise.all(
+          baseGlossary.map(async (item) => ({
+            term: item.term, // Keep terms in English for reference
+            definition: await translateText(item.definition, language as any),
+          }))
+        );
+
+        setTranslatedContent({
+          educationalContent: translatedEducationalContent,
+          glossary: translatedGlossary,
+          sectionTitles,
+        });
+      } catch (error) {
+        console.error('Translation error:', error);
+        // Fall back to English content
+        setTranslatedContent({
+          educationalContent: baseEducationalContent,
+          glossary: baseGlossary,
+          sectionTitles: {
+            investmentOptions: 'Investment Options',
+            availableInvestments: 'Available Investments',
+            learnAboutInvesting: 'Learn About Investing',
+            keyInvestmentTerms: 'Key Investment Terms',
+            beginnerTopics: 'Beginner Topics',
+            intermediateTopics: 'Intermediate Topics',
+            advancedTopics: 'Advanced Topics',
+          },
+        });
+      }
+    };
+
+    translateContent();
+  }, [language]);
+
+  const educationalContent = translatedContent?.educationalContent || baseEducationalContent;
+  const glossary = translatedContent?.glossary || baseGlossary;
+  const sectionTitles = translatedContent?.sectionTitles || {
+    investmentOptions: 'Investment Options',
+    availableInvestments: 'Available Investments',
+    learnAboutInvesting: 'Learn About Investing',
+    keyInvestmentTerms: 'Key Investment Terms',
+    beginnerTopics: 'Beginner Topics',
+    intermediateTopics: 'Intermediate Topics',
+    advancedTopics: 'Advanced Topics',
+  };
+
   return (
     <div className="explore">
       {/* Risk Profile Notice */}
@@ -270,7 +388,7 @@ export default function Explore() {
       <DailyUpdates />
 
       {/* All Investment Options */}
-      <h2 className="section-title">Investment Options</h2>
+      <h2 className="section-title">{sectionTitles.investmentOptions}</h2>
       <div className="investment-categories">
         {Object.values(RISK_PROFILES).map((profile) => (
           <div key={profile.id} className="category-card">
@@ -281,7 +399,7 @@ export default function Explore() {
       </div>
 
       {/* Investment Types */}
-      <h2 className="section-title">Available Investments</h2>
+      <h2 className="section-title">{sectionTitles.availableInvestments}</h2>
       <div className="investments-grid">
         {INVESTMENT_TYPES.map((investment) => (
           <div key={investment.id} className="investment-card">
@@ -314,13 +432,13 @@ export default function Explore() {
       </div>
 
       {/* Educational Content */}
-      <h2 className="section-title">Learn About Investing</h2>
+      <h2 className="section-title">{sectionTitles.learnAboutInvesting}</h2>
       <p className="section-subtitle">
         Curated educational content from top financial educators - all links verified and working! Click to watch or read.
       </p>
 
       {/* Beginner Section */}
-      <h3 className="subsection-title">🌱 Beginner Topics</h3>
+      <h3 className="subsection-title">🌱 {sectionTitles.beginnerTopics}</h3>
       <div className="content-grid">
         {educationalContent.filter(c => c.category === 'Beginner').map((content) => (
           <div key={content.id} className="content-card-expanded">
@@ -367,7 +485,7 @@ export default function Explore() {
       </div>
 
       {/* Intermediate Section */}
-      <h3 className="subsection-title">📈 Intermediate Topics</h3>
+      <h3 className="subsection-title">📈 {sectionTitles.intermediateTopics}</h3>
       <div className="content-grid">
         {educationalContent.filter(c => c.category === 'Intermediate').map((content) => (
           <div key={content.id} className="content-card-expanded">
@@ -412,7 +530,7 @@ export default function Explore() {
       </div>
 
       {/* Advanced Section */}
-      <h3 className="subsection-title">🚀 Advanced Topics</h3>
+      <h3 className="subsection-title">🚀 {sectionTitles.advancedTopics}</h3>
       <div className="content-grid">
         {educationalContent.filter(c => c.category === 'Advanced').map((content) => (
           <div key={content.id} className="content-card-expanded">
@@ -457,7 +575,7 @@ export default function Explore() {
       </div>
 
       {/* Glossary */}
-      <h2 className="section-title">Key Investment Terms</h2>
+      <h2 className="section-title">{sectionTitles.keyInvestmentTerms}</h2>
       <div className="glossary-grid">
         {glossary.map((item, index) => (
           <div key={index} className="glossary-card">

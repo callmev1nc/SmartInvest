@@ -84,7 +84,7 @@ For each category, provide:
 - 2-3 key bullet points
 
 Then provide:
-- 3-5 specific investment opportunities personalized for a ${riskProfile || 'moderate'} investor
+- 9 specific investment opportunities personalized for a ${riskProfile || 'moderate'} investor
 - Each opportunity should include: category, name, description, risk level (1-10), expected return, time horizon, action (buy/hold/sell/watch), and reasoning
 
 IMPORTANT:
@@ -246,6 +246,66 @@ function getFallbackDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate {
         timeHorizon: '5+ years',
         action: 'buy',
         reason: 'Good income generation with inflation hedge',
+      },
+      {
+        category: 'Bonds',
+        name: 'Government Bond Fund',
+        description: 'Treasury bonds with low risk and stable returns',
+        riskLevel: 2,
+        expectedReturn: '3-5% annually',
+        timeHorizon: '1-10 years',
+        action: riskProfile === 'conservative' ? 'buy' : 'hold',
+        reason: riskProfile === 'conservative' ? 'Safe haven for conservative investors' : 'Keep as stabilizer',
+      },
+      {
+        category: 'Stocks',
+        name: 'Technology ETF',
+        description: 'Focused exposure to tech sector leaders',
+        riskLevel: 7,
+        expectedReturn: '10-15% annually',
+        timeHorizon: '5+ years',
+        action: riskProfile === 'growth' ? 'buy' : 'watch',
+        reason: riskProfile === 'growth' ? 'High growth potential' : 'Too volatile for your risk level',
+      },
+      {
+        category: 'International',
+        name: 'Emerging Markets Index Fund',
+        description: 'Exposure to growing economies in Asia, Latin America',
+        riskLevel: 7,
+        expectedReturn: '8-12% annually',
+        timeHorizon: '7+ years',
+        action: riskProfile === 'growth' ? 'buy' : 'watch',
+        reason: 'High growth potential but with currency and political risks',
+      },
+      {
+        category: 'Stocks',
+        name: 'Dividend Aristocrats Fund',
+        description: 'Companies with 25+ years of dividend increases',
+        riskLevel: 4,
+        expectedReturn: '6-8% annually (dividends + growth)',
+        timeHorizon: '5+ years',
+        action: 'buy',
+        reason: 'Steady income with growth potential',
+      },
+      {
+        category: 'Alternative Investments',
+        name: 'Gold ETF',
+        description: 'Physical gold backing for portfolio protection',
+        riskLevel: 5,
+        expectedReturn: '5-8% annually',
+        timeHorizon: '3+ years',
+        action: 'hold',
+        reason: 'Good diversification and inflation hedge',
+      },
+      {
+        category: 'Stocks',
+        name: 'Healthcare Sector Fund',
+        description: 'Exposure to healthcare and pharmaceutical companies',
+        riskLevel: 5,
+        expectedReturn: '8-11% annually',
+        timeHorizon: '5+ years',
+        action: 'buy',
+        reason: 'Defensive sector with aging population tailwind',
       },
     ],
     summary: 'Daily market update: Markets are navigating through uncertainty. Stay focused on your long-term investment goals and maintain proper diversification.',

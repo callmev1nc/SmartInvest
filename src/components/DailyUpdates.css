@@ -57,6 +57,13 @@
   cursor: not-allowed;
 }
 
+.translating-badge {
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
 /* Loading State */
 .updates-loading {
   text-align: center;

@@ -5,13 +5,18 @@
 
 import { useState, useEffect } from 'react';
 import { getDailyUpdates, type DailyUpdate, type MarketUpdate } from '@/services/dailyUpdates';
+import { translateText } from '@/services/translation';
 import { useUser } from '@/contexts/UserContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import './DailyUpdates.css';
 
 export function DailyUpdates() {
   const { riskProfile } = useUser();
+  const { language } = useLanguage();
   const [updates, setUpdates] = useState<DailyUpdate | null>(null);
+  const [translatedUpdates, setTranslatedUpdates] = useState<DailyUpdate | null>(null);
   const [loading, setLoading] = useState(true);
+  const [translating, setTranslating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -27,6 +32,15 @@ export function DailyUpdates() {
   useEffect(() => {
     loadUpdates(false);
   }, [riskProfile]);
+
+  // Translate updates when language or updates change
+  useEffect(() => {
+    if (updates && language !== 'en') {
+      translateUpdates(updates, language);
+    } else {
+      setTranslatedUpdates(updates);
+    }
+  }, [updates, language]);
 
   const loadUpdates = async (forceRefresh = false) => {
     try {
@@ -45,9 +59,69 @@ export function DailyUpdates() {
     }
   };
 
+  const translateUpdates = async (data: DailyUpdate, targetLanguage: string) => {
+    try {
+      setTranslating(true);
+
+      // Translate summary
+      const translatedSummary = await translateText(data.summary, targetLanguage as any);
+
+      // Translate market updates
+      const translatedMarkets = {
+        stocks: await translateMarketUpdate(data.markets.stocks, targetLanguage),
+        crypto: await translateMarketUpdate(data.markets.crypto, targetLanguage),
+        realEstate: await translateMarketUpdate(data.markets.realEstate, targetLanguage),
+        international: await translateMarketUpdate(data.markets.international, targetLanguage),
+        alternativeInvestments: await translateMarketUpdate(data.markets.alternativeInvestments, targetLanguage),
+      };
+
+      // Translate opportunities
+      const translatedOpportunities = await Promise.all(
+        data.opportunities.map(async (opp) => ({
+          ...opp,
+          category: await translateText(opp.category, targetLanguage as any),
+          name: opp.name, // Keep investment names in English
+          description: await translateText(opp.description, targetLanguage as any),
+          expectedReturn: opp.expectedReturn, // Keep return format
+          timeHorizon: await translateText(opp.timeHorizon, targetLanguage as any),
+          reason: await translateText(opp.reason, targetLanguage as any),
+        }))
+      );
+
+      setTranslatedUpdates({
+        ...data,
+        summary: translatedSummary,
+        markets: translatedMarkets,
+        opportunities: translatedOpportunities,
+      });
+    } catch (error) {
+      console.error('Translation error:', error);
+      // Fall back to original data if translation fails
+      setTranslatedUpdates(data);
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  const translateMarketUpdate = async (market: MarketUpdate, targetLanguage: string): Promise<MarketUpdate> => {
+    const translatedSummary = await translateText(market.summary, targetLanguage as any);
+    const translatedKeyPoints = await Promise.all(
+      market.keyPoints.map(point => translateText(point, targetLanguage as any))
+    );
+
+    return {
+      ...market,
+      summary: translatedSummary,
+      keyPoints: translatedKeyPoints,
+    };
+  };
+
   const handleRefresh = () => {
     loadUpdates(true);
   };
+
+  // Use translated updates if available, otherwise use original
+  const displayUpdates = translatedUpdates || updates;
 
   if (loading) {
     return (
@@ -63,7 +137,7 @@ export function DailyUpdates() {
     );
   }
 
-  if (error || !updates) {
+  if (error || !displayUpdates) {
     return (
       <div className="daily-updates">
         <div className="updates-header">
@@ -100,10 +174,11 @@ export function DailyUpdates() {
                 hour12: false,
               })}
             </span>
+            {translating && <span className="translating-badge">Translating...</span>}
           </span>
           <button
             onClick={handleRefresh}
-            disabled={refreshing}
+            disabled={refreshing || translating}
             className="refresh-button"
             aria-label={refreshing ? 'Refreshing market updates...' : 'Refresh market updates'}
           >
@@ -114,7 +189,7 @@ export function DailyUpdates() {
 
       {/* Summary */}
       <div className="updates-summary" role="region" aria-label="Market summary">
-        <p>{updates.summary}</p>
+        <p>{displayUpdates.summary}</p>
         <p className="disclaimer">
           💡 AI-powered analysis based on current market data. Not financial advice.
         </p>
@@ -122,21 +197,21 @@ export function DailyUpdates() {
 
       {/* Market Overview */}
       <div className="markets-grid" role="region" aria-label="Market overview">
-        <MarketCard market={updates.markets.stocks} title="Stocks" icon="📈" />
-        <MarketCard market={updates.markets.crypto} title="Crypto" icon="₿" />
-        <MarketCard market={updates.markets.realEstate} title="Real Estate" icon="🏠" />
-        <MarketCard market={updates.markets.international} title="International" icon="🌍" />
-        <MarketCard market={updates.markets.alternativeInvestments} title="Alternatives" icon="🎨" />
+        <MarketCard market={displayUpdates.markets.stocks} title="Stocks" icon="📈" />
+        <MarketCard market={displayUpdates.markets.crypto} title="Crypto" icon="₿" />
+        <MarketCard market={displayUpdates.markets.realEstate} title="Real Estate" icon="🏠" />
+        <MarketCard market={displayUpdates.markets.international} title="International" icon="🌍" />
+        <MarketCard market={displayUpdates.markets.alternativeInvestments} title="Alternatives" icon="🎨" />
       </div>
 
       {/* Opportunities */}
-      {updates.opportunities.length > 0 && (
+      {displayUpdates.opportunities.length > 0 && (
         <div className="opportunities-section">
           <h3 className="opportunities-title">
             🎯 Top Opportunities for {riskProfile ? riskProfile.toUpperCase() : 'MODERATE'} Investors
           </h3>
           <div className="opportunities-grid">
-            {updates.opportunities.map((opp, index) => (
+            {displayUpdates.opportunities.map((opp, index) => (
               <OpportunityCard key={index} opportunity={opp} />
             ))}
           </div>
