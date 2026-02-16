@@ -124,7 +124,7 @@
 }
 
 .feature-card {
-  background: white;
+  background: var(--background);
   padding: 1.5rem;
   border-radius: 12px;
   text-decoration: none;
@@ -191,7 +191,7 @@
 }
 
 .tip-card {
-  background: white;
+  background: var(--background);
   padding: 1.25rem;
   border-radius: 8px;
   margin-bottom: 1rem;

@@ -4,7 +4,7 @@
 }
 
 .quiz-container {
-  background: white;
+  background: var(--background);
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -80,7 +80,7 @@
 
 .option {
   padding: 1rem 1.5rem;
-  background: white;
+  background: var(--background);
   border: 1px solid var(--border);
   border-radius: 8px;
   text-align: left;
@@ -113,7 +113,7 @@
 
 /* Result Styles */
 .quiz-result {
-  background: white;
+  background: var(--background);
   padding: 3rem 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

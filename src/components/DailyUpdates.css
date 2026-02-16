@@ -1,6 +1,6 @@
 /* Daily Updates Container */
 .daily-updates {
-  background: white;
+  background: var(--background);
   border-radius: 12px;
   padding: 2rem;
   margin: 2rem 0;

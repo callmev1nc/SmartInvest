@@ -38,7 +38,7 @@
 }
 
 .category-card {
-  background: white;
+  background: var(--background);
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -64,7 +64,7 @@
 }
 
 .investment-card {
-  background: white;
+  background: var(--background);
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -132,7 +132,7 @@
 .content-card {
   display: flex;
   align-items: start;
-  background: white;
+  background: var(--background);
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -181,7 +181,7 @@
 }
 
 .glossary-card {
-  background: white;
+  background: var(--background);
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -222,7 +222,7 @@
 .content-card-expanded {
   display: flex;
   flex-direction: column;
-  background: white;
+  background: var(--background);
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
