@@ -80,7 +80,7 @@ export function DailyUpdates() {
   }
 
   return (
-    <div className="daily-updates">
+    <div className="daily-updates" role="region" aria-label="Daily Market Updates">
       <div className="updates-header">
         <h2 className="updates-title">📊 Daily Market Updates</h2>
         <div className="updates-meta">
@@ -105,6 +105,7 @@ export function DailyUpdates() {
             onClick={handleRefresh}
             disabled={refreshing}
             className="refresh-button"
+            aria-label={refreshing ? 'Refreshing market updates...' : 'Refresh market updates'}
           >
             {refreshing ? '🔄 Refreshing...' : '🔄 Refresh'}
           </button>
@@ -112,7 +113,7 @@ export function DailyUpdates() {
       </div>
 
       {/* Summary */}
-      <div className="updates-summary">
+      <div className="updates-summary" role="region" aria-label="Market summary">
         <p>{updates.summary}</p>
         <p className="disclaimer">
           💡 AI-powered analysis based on current market data. Not financial advice.
@@ -120,7 +121,7 @@ export function DailyUpdates() {
       </div>
 
       {/* Market Overview */}
-      <div className="markets-grid">
+      <div className="markets-grid" role="region" aria-label="Market overview">
         <MarketCard market={updates.markets.stocks} title="Stocks" icon="📈" />
         <MarketCard market={updates.markets.crypto} title="Crypto" icon="₿" />
         <MarketCard market={updates.markets.realEstate} title="Real Estate" icon="🏠" />
@@ -156,11 +157,11 @@ function MarketCard({ market, title, icon }: MarketCardProps) {
   const trendArrow = market.trend === 'up' ? '↑' : market.trend === 'down' ? '↓' : '→';
 
   return (
-    <div className="market-card">
+    <div className="market-card" role="region" aria-label={`${title} market update`}>
       <div className="market-header">
-        <span className="market-icon">{icon}</span>
+        <span className="market-icon" aria-hidden="true">{icon}</span>
         <h4 className="market-title">{title}</h4>
-        <span className="market-trend" style={{ color: trendColor }}>
+        <span className="market-trend" style={{ color: trendColor }} aria-label={`Trend: ${market.trend}`}>
           {trendArrow} {market.trend.toUpperCase()}
         </span>
       </div>

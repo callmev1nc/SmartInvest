@@ -24,16 +24,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <button
             onClick={toggleTheme}
             className="theme-toggle"
-            aria-label="Toggle theme"
+            aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
           >
             {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
           <div className="language-selector">
-            <Languages size={18} strokeWidth={2} className="language-icon" />
+            <Languages size={18} strokeWidth={2} className="language-icon" aria-hidden="true" />
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as any)}
               className="language-dropdown"
+              aria-label="Select language"
             >
               <option value="en">English</option>
               <option value="zh">中文</option>
@@ -43,21 +44,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <nav className="nav">
-        <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`}>
-          <Home size={20} strokeWidth={2} />
+      <nav className="nav" aria-label="Main navigation">
+        <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`} aria-label="Go to home page">
+          <Home size={20} strokeWidth={2} aria-hidden="true" />
           <span>{t('navHome')}</span>
         </Link>
-        <Link to="/chat" className={`nav-link ${isActive('/chat') ? 'active' : ''}`}>
-          <MessageSquare size={20} strokeWidth={2} />
+        <Link to="/chat" className={`nav-link ${isActive('/chat') ? 'active' : ''}`} aria-label="Go to chat page">
+          <MessageSquare size={20} strokeWidth={2} aria-hidden="true" />
           <span>{t('navChat')}</span>
         </Link>
-        <Link to="/quiz" className={`nav-link ${isActive('/quiz') ? 'active' : ''}`}>
-          <ClipboardList size={20} strokeWidth={2} />
+        <Link to="/quiz" className={`nav-link ${isActive('/quiz') ? 'active' : ''}`} aria-label="Go to risk assessment quiz">
+          <ClipboardList size={20} strokeWidth={2} aria-hidden="true" />
           <span>{t('navQuiz')}</span>
         </Link>
-        <Link to="/explore" className={`nav-link ${isActive('/explore') ? 'active' : ''}`}>
-          <Compass size={20} strokeWidth={2} />
+        <Link to="/explore" className={`nav-link ${isActive('/explore') ? 'active' : ''}`} aria-label="Go to explore page">
+          <Compass size={20} strokeWidth={2} aria-hidden="true" />
           <span>{t('navExplore')}</span>
         </Link>
       </nav>
