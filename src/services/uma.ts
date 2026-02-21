@@ -22,18 +22,27 @@ export interface UmaResponse {
 const MODEL = API_CONFIG.MODEL;
 
 /**
- * Initialize the Google AI client
+ * AI Client Cache - Reuse the same client instance
  */
-function getAIClient() {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+let aiClient: GoogleGenAI | null = null;
 
-  if (!apiKey) {
-    throw new Error(ERROR_MESSAGES.API_KEY_MISSING);
+/**
+ * Initialize the Google AI client (cached for performance)
+ */
+function getAIClient(): GoogleGenAI {
+  if (!aiClient) {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+    if (!apiKey) {
+      throw new Error(ERROR_MESSAGES.API_KEY_MISSING);
+    }
+
+    aiClient = new GoogleGenAI({
+      apiKey,
+    });
   }
 
-  return new GoogleGenAI({
-    apiKey,
-  });
+  return aiClient;
 }
 
 /**

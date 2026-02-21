@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { chatWithUmaStream } from '@/services/uma';
@@ -27,6 +27,27 @@ function limitMessages(messages: Message[]): Message[] {
   }
   return messages;
 }
+
+/**
+ * Memoized MessageItem component to prevent unnecessary re-renders
+ * Only re-renders when the message content changes
+ */
+const MessageItem = memo(({ message }: { message: Message }) => (
+  <div
+    className={`message ${message.role === 'user' ? 'user-message' : 'uma-message'}`}
+  >
+    {message.role === 'assistant' && (
+      <div className="message-sender">Uma</div>
+    )}
+    <div className="message-bubble">
+      <p className="message-text">{message.content}</p>
+    </div>
+    <span className="message-time">
+      {formatTime(message.timestamp)}
+    </span>
+  </div>
+));
+MessageItem.displayName = 'MessageItem';
 
 export default function Chat() {
   const { userName, riskProfile, setUserName, isOnboardingComplete } = useUser();
@@ -80,7 +101,7 @@ export default function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const sendMessage = async (text?: string) => {
+  const sendMessage = useCallback(async (text?: string) => {
     const rawMessage = text || inputText;
 
     if (!rawMessage.trim() || !userName) return;
@@ -162,12 +183,12 @@ export default function Chat() {
 
       setMessages((prev) => limitMessages([...prev, errorMsg]));
     }
-  };
+  }, [inputText, userName, messages, riskProfile, language]);
 
-  const handleSuggestedQuestion = (question: string) => {
+  const handleSuggestedQuestion = useCallback((question: string) => {
     setInputText(question);
     sendMessage(question);
-  };
+  }, [sendMessage]);
 
   if (!userName) {
     return (
@@ -224,20 +245,7 @@ export default function Chat() {
         {/* Messages */}
         <div className="messages">
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`message ${message.role === 'user' ? 'user-message' : 'uma-message'}`}
-            >
-              {message.role === 'assistant' && (
-                <div className="message-sender">Uma</div>
-              )}
-              <div className="message-bubble">
-                <p className="message-text">{message.content}</p>
-              </div>
-              <span className="message-time">
-                {formatTime(message.timestamp)}
-              </span>
-            </div>
+            <MessageItem key={message.id} message={message} />
           ))}
 
           {isTyping && (

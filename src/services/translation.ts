@@ -1,5 +1,6 @@
 /**
  * Translation Service - Uses Google Gemini AI for dynamic translation
+ * Features: Intelligent caching to minimize API calls
  */
 
 import { GoogleGenAI } from '@google/genai';
@@ -9,18 +10,61 @@ import { API_CONFIG, ERROR_MESSAGES } from '@/constants/config';
 const MODEL = API_CONFIG.MODEL;
 
 /**
- * Initialize the Google AI client
+ * Translation Cache - Stores translated texts to avoid redundant API calls
+ * Key format: "text|language"
+ * Limited to 500 entries to prevent memory issues
  */
-function getAIClient() {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+class TranslationCache {
+  private cache = new Map<string, string>();
+  private maxEntries = 500;
 
-  if (!apiKey) {
-    throw new Error(ERROR_MESSAGES.API_KEY_MISSING);
+  set(key: string, value: string): void {
+    // If cache is full, remove oldest entry (first entry)
+    if (this.cache.size >= this.maxEntries) {
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey) {
+        this.cache.delete(firstKey);
+      }
+    }
+    this.cache.set(key, value);
   }
 
-  return new GoogleGenAI({
-    apiKey,
-  });
+  get(key: string): string | undefined {
+    return this.cache.get(key);
+  }
+
+  clear(): void {
+    this.cache.clear();
+  }
+
+  get size(): number {
+    return this.cache.size;
+  }
+}
+
+// Global cache instance
+const translationCache = new TranslationCache();
+
+/**
+ * AI Client Cache - Reuse the same client instance
+ */
+let aiClient: GoogleGenAI | null = null;
+
+/**
+ * Initialize the Google AI client (cached)
+ */
+function getAIClient(): GoogleGenAI {
+  if (!aiClient) {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+    if (!apiKey) {
+      throw new Error(ERROR_MESSAGES.API_KEY_MISSING);
+    }
+
+    aiClient = new GoogleGenAI({ apiKey });
+  }
+
+  return aiClient;
 }
 
 /**
@@ -33,7 +77,14 @@ const languageNames: Record<Language, string> = {
 };
 
 /**
- * Translate text using Gemini AI
+ * Generate cache key from text and language
+ */
+function getCacheKey(text: string, language: Language): string {
+  return `${text}|${language}`;
+}
+
+/**
+ * Translate text using Gemini AI with caching
  */
 export async function translateText(
   text: string,
@@ -42,6 +93,13 @@ export async function translateText(
   // Skip translation if target is English
   if (targetLanguage === 'en') {
     return text;
+  }
+
+  // Check cache first
+  const cacheKey = getCacheKey(text, targetLanguage);
+  const cached = translationCache.get(cacheKey);
+  if (cached) {
+    return cached;
   }
 
   try {
@@ -81,7 +139,12 @@ IMPORTANT: Return ONLY the translated text, no additional explanation or comment
       fullResponse += chunk.text;
     }
 
-    return fullResponse.trim();
+    const translated = fullResponse.trim();
+
+    // Cache the result
+    translationCache.set(cacheKey, translated);
+
+    return translated;
   } catch (error) {
     console.error('Translation error:', error);
     // Return original text if translation fails
@@ -90,7 +153,8 @@ IMPORTANT: Return ONLY the translated text, no additional explanation or comment
 }
 
 /**
- * Translate multiple texts in batch
+ * Translate multiple texts in batch with caching
+ * Checks cache for each text before making API call
  */
 export async function translateBatch(
   texts: string[],
@@ -100,13 +164,36 @@ export async function translateBatch(
     return texts;
   }
 
+  // Check cache for each text
+  const results: string[] = [];
+  const uncachedIndices: number[] = [];
+  const uncachedTexts: string[] = [];
+
+  texts.forEach((text, index) => {
+    const cacheKey = getCacheKey(text, targetLanguage);
+    const cached = translationCache.get(cacheKey);
+
+    if (cached !== undefined) {
+      results[index] = cached;
+    } else {
+      uncachedIndices.push(index);
+      uncachedTexts.push(text);
+    }
+  });
+
+  // If all texts were cached, return immediately
+  if (uncachedTexts.length === 0) {
+    return results;
+  }
+
+  // Translate only the uncached texts
   try {
     const ai = getAIClient();
     const targetLangName = languageNames[targetLanguage];
 
     const prompt = `Translate the following texts to ${targetLangName}. Keep the meaning exactly the same. Do NOT translate proper names like "Uma" or "SmartInvest".
 
-${texts.map((text, i) => `Text ${i + 1}: ${text}`).join('\n\n')}
+${uncachedTexts.map((text, i) => `Text ${i + 1}: ${text}`).join('\n\n')}
 
 Return the translations in the same format:
 Translation 1: [translated text]
@@ -144,14 +231,48 @@ etc.`;
       }
     }
 
-    // If parsing failed, return original texts
-    if (translations.length !== texts.length) {
-      return texts;
+    // If parsing failed, return original texts for uncached items
+    if (translations.length !== uncachedTexts.length) {
+      uncachedIndices.forEach((index, i) => {
+        results[index] = uncachedTexts[i];
+      });
+    } else {
+      // Cache and assign the translations
+      translations.forEach((translation, i) => {
+        const index = uncachedIndices[i];
+        const text = uncachedTexts[i];
+        const cacheKey = getCacheKey(text, targetLanguage);
+
+        translationCache.set(cacheKey, translation);
+        results[index] = translation;
+      });
     }
 
-    return translations;
+    return results;
   } catch (error) {
     console.error('Batch translation error:', error);
-    return texts;
+    // Return original texts for uncached items
+    uncachedIndices.forEach((index, i) => {
+      results[index] = uncachedTexts[i];
+    });
+    return results;
   }
+}
+
+/**
+ * Clear the translation cache
+ * Useful for freeing memory or forcing fresh translations
+ */
+export function clearTranslationCache(): void {
+  translationCache.clear();
+}
+
+/**
+ * Get cache statistics
+ */
+export function getTranslationCacheStats(): { size: number; maxEntries: number } {
+  return {
+    size: translationCache.size,
+    maxEntries: 500,
+  };
 }
