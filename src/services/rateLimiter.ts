@@ -18,7 +18,7 @@ export class RateLimiter {
 
   // Daily tracking
   private dailyRequestCount: number = 0;
-  private dailyResetTime: number;
+  private dailyResetTime!: number; // Definitely assigned in constructor via calculateNextReset()
 
   /**
    * Create a rate limiter
