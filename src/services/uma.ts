@@ -5,6 +5,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { UMA_SYSTEM_PROMPT, getGreeting } from '@/constants/uma';
 import type { RiskProfile } from '@/constants/investment';
+import { googleAIRateLimiter } from '@/services/rateLimiter';
 
 export interface ChatMessage {
   id: string;
@@ -128,10 +129,13 @@ export async function chatWithUma(
       },
     ];
 
-    const response = await ai.models.generateContentStream({
-      model: MODEL,
-      config,
-      contents,
+    // Use rate limiter to stay under 24 RPM
+    const response = await googleAIRateLimiter.execute(async () => {
+      return await ai.models.generateContentStream({
+        model: MODEL,
+        config,
+        contents,
+      });
     });
 
     let fullResponse = '';
@@ -182,10 +186,13 @@ export async function* chatWithUmaStream(
       },
     ];
 
-    const response = await ai.models.generateContentStream({
-      model: MODEL,
-      config,
-      contents,
+    // Use rate limiter to stay under 24 RPM
+    const response = await googleAIRateLimiter.execute(async () => {
+      return await ai.models.generateContentStream({
+        model: MODEL,
+        config,
+        contents,
+      });
     });
 
     // Yield chunks as they arrive
@@ -225,10 +232,13 @@ Please provide a warm, welcoming message (2-3 sentences) introducing yourself as
       },
     ];
 
-    const result = await ai.models.generateContentStream({
-      model: MODEL,
-      config,
-      contents,
+    // Use rate limiter to stay under 24 RPM
+    const result = await googleAIRateLimiter.execute(async () => {
+      return await ai.models.generateContentStream({
+        model: MODEL,
+        config,
+        contents,
+      });
     });
 
     let fullResponse = '';

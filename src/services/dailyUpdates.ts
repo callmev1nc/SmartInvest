@@ -5,6 +5,7 @@
 
 import { GoogleGenAI } from '@google/genai';
 import type { RiskProfile } from '@/constants/investment';
+import { googleAIRateLimiter } from '@/services/rateLimiter';
 
 export interface DailyUpdate {
   date: string;
@@ -122,10 +123,13 @@ Respond ONLY with valid JSON, no additional text.`;
       },
     ];
 
-    const response = await ai.models.generateContentStream({
-      model: 'gemini-3-pro-preview',
-      config,
-      contents,
+    // Use rate limiter to stay under 24 RPM
+    const response = await googleAIRateLimiter.execute(async () => {
+      return await ai.models.generateContentStream({
+        model: 'gemini-3-pro-preview',
+        config,
+        contents,
+      });
     });
 
     let fullResponse = '';
