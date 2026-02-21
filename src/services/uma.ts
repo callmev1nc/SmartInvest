@@ -258,10 +258,10 @@ Please provide a warm, welcoming message (2-3 sentences) introducing yourself as
  * Validate that the API key is configured
  */
 export function validateUmaConfiguration(): { isValid: boolean; error?: string } {
-  if (!(import.meta as any).env.VITE_GEMINI_API_KEY) {
+  if (!import.meta.env.VITE_GEMINI_API_KEY) {
     return {
       isValid: false,
-      error: 'VITE_GEMINI_API_KEY is not set. Please add it to your .env file.',
+      error: ERROR_MESSAGES.API_KEY_MISSING,
     };
   }
 

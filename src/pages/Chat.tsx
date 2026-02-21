@@ -7,6 +7,7 @@ import { getWelcomeMessage } from '@/constants/uma';
 import { UMA_SUGGESTED_QUESTIONS } from '@/constants/uma';
 import { UI_CONFIG } from '@/constants/config';
 import { StorageHelper } from '@/utils/storage';
+import { sanitizeChatMessage, sanitizeName } from '@/utils/sanitize';
 import './Chat.css';
 
 interface Message {
@@ -80,15 +81,18 @@ export default function Chat() {
   }, [messages]);
 
   const sendMessage = async (text?: string) => {
-    const messageToSend = text || inputText;
+    const rawMessage = text || inputText;
 
-    if (!messageToSend.trim() || !userName) return;
+    if (!rawMessage.trim() || !userName) return;
+
+    // Sanitize user input to prevent XSS and injection attacks
+    const messageToSend = sanitizeChatMessage(rawMessage.trim());
 
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: messageToSend.trim(),
+      content: messageToSend,
       timestamp: new Date(),
     };
 
@@ -182,7 +186,8 @@ export default function Chat() {
               if (e.key === 'Enter') {
                 const target = e.target as HTMLInputElement;
                 if (target.value.trim()) {
-                  setUserName(target.value.trim());
+                  const sanitizedName = sanitizeName(target.value.trim());
+                  setUserName(sanitizedName);
                   setShowNameModal(false);
                 }
               }
@@ -194,7 +199,8 @@ export default function Chat() {
             onClick={() => {
               const input = document.querySelector('.name-input') as HTMLInputElement;
               if (input?.value.trim()) {
-                setUserName(input.value.trim());
+                const sanitizedName = sanitizeName(input.value.trim());
+                setUserName(sanitizedName);
                 setShowNameModal(false);
               }
             }}
