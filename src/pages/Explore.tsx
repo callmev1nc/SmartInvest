@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translateText } from '@/services/translation';
 import { INVESTMENT_TYPES, RISK_PROFILES } from '@/constants/investment';
+import type { RiskProfileInfo } from '@/constants/investment';
 import { DailyUpdates } from '@/components/DailyUpdates';
 import './Explore.css';
 
@@ -26,6 +27,102 @@ interface GlossaryItem {
   term: string;
   definition: string;
 }
+
+// Memoized sub-components to prevent unnecessary re-renders
+const CategoryCard = memo(({ profile }: { profile: RiskProfileInfo }) => (
+  <div className="category-card">
+    <h3 className="category-title">{profile.name}</h3>
+    <p className="category-description">{profile.description}</p>
+  </div>
+));
+CategoryCard.displayName = 'CategoryCard';
+
+const InvestmentCard = memo(({ investment }: { investment: any }) => (
+  <div className="investment-card">
+    <div className="investment-header">
+      <h3 className="investment-name">{investment.name}</h3>
+      <span
+        className="risk-badge"
+        style={{
+          background:
+            investment.riskLevel <= 2
+              ? '#10B981'
+              : investment.riskLevel <= 5
+              ? '#F59E0B'
+              : '#EF4444',
+        }}
+      >
+        Risk: {investment.riskLevel}/10
+      </span>
+    </div>
+    <p className="investment-description">{investment.description}</p>
+    <div className="investment-details">
+      <div className="detail">
+        <span className="detail-label">💰 Min:</span>
+        <span className="detail-value">${investment.minAmount}</span>
+      </div>
+      <div className="detail">
+        <span className="detail-label">📈 Return:</span>
+        <span className="detail-value">{investment.expectedReturn}</span>
+      </div>
+      <div className="detail">
+        <span className="detail-label">🔄 Liquidity:</span>
+        <span className="detail-value">{investment.liquidity}</span>
+      </div>
+    </div>
+  </div>
+));
+InvestmentCard.displayName = 'InvestmentCard';
+
+const ContentCard = memo(({ content }: { content: EducationalContent }) => (
+  <div className="content-card-expanded">
+    <span className="content-icon">{content.icon}</span>
+    <div className="content-info">
+      <h3 className="content-title">{content.title}</h3>
+      <div className="content-meta">
+        <span className="content-category">{content.category}</span>
+        <span className="content-duration">{content.duration}</span>
+      </div>
+
+      {content.youtubeVideo && (
+        <div className="content-resource">
+          <a
+            href={`https://www.youtube.com/watch?v=${content.youtubeVideo.videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="video-link"
+          >
+            <span className="resource-icon">▶️</span>
+            <span className="resource-text">Watch: {content.youtubeVideo.title}</span>
+          </a>
+        </div>
+      )}
+
+      {content.article && (
+        <div className="content-resource">
+          <a
+            href={content.article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="article-link"
+          >
+            <span className="resource-icon">📄</span>
+            <span className="resource-text">Read: {content.article.title}</span>
+          </a>
+        </div>
+      )}
+    </div>
+  </div>
+));
+ContentCard.displayName = 'ContentCard';
+
+const GlossaryCard = memo(({ item }: { item: GlossaryItem; index: number }) => (
+  <div className="glossary-card">
+    <h4 className="glossary-term">{item.term}</h4>
+    <p className="glossary-definition">{item.definition}</p>
+  </div>
+));
+GlossaryCard.displayName = 'GlossaryCard';
 
 export default function Explore() {
   const { riskProfile } = useUser();
@@ -307,21 +404,21 @@ export default function Explore() {
       try {
         // Translate section titles
         const sectionTitles = {
-          investmentOptions: await translateText('Investment Options', language as any),
-          availableInvestments: await translateText('Available Investments', language as any),
-          learnAboutInvesting: await translateText('Learn About Investing', language as any),
-          keyInvestmentTerms: await translateText('Key Investment Terms', language as any),
-          beginnerTopics: await translateText('Beginner Topics', language as any),
-          intermediateTopics: await translateText('Intermediate Topics', language as any),
-          advancedTopics: await translateText('Advanced Topics', language as any),
+          investmentOptions: await translateText('Investment Options', language),
+          availableInvestments: await translateText('Available Investments', language),
+          learnAboutInvesting: await translateText('Learn About Investing', language),
+          keyInvestmentTerms: await translateText('Key Investment Terms', language),
+          beginnerTopics: await translateText('Beginner Topics', language),
+          intermediateTopics: await translateText('Intermediate Topics', language),
+          advancedTopics: await translateText('Advanced Topics', language),
         };
 
         // Translate educational content
         const translatedEducationalContent = await Promise.all(
           baseEducationalContent.map(async (content) => ({
             ...content,
-            title: await translateText(content.title, language as any),
-            category: await translateText(content.category, language as any),
+            title: await translateText(content.title, language),
+            category: await translateText(content.category, language),
           }))
         );
 
@@ -329,7 +426,7 @@ export default function Explore() {
         const translatedGlossary = await Promise.all(
           baseGlossary.map(async (item) => ({
             term: item.term, // Keep terms in English for reference
-            definition: await translateText(item.definition, language as any),
+            definition: await translateText(item.definition, language),
           }))
         );
 
@@ -391,10 +488,7 @@ export default function Explore() {
       <h2 className="section-title">{sectionTitles.investmentOptions}</h2>
       <div className="investment-categories">
         {Object.values(RISK_PROFILES).map((profile) => (
-          <div key={profile.id} className="category-card">
-            <h3 className="category-title">{profile.name}</h3>
-            <p className="category-description">{profile.description}</p>
-          </div>
+          <CategoryCard key={profile.id} profile={profile} />
         ))}
       </div>
 
@@ -402,32 +496,7 @@ export default function Explore() {
       <h2 className="section-title">{sectionTitles.availableInvestments}</h2>
       <div className="investments-grid">
         {INVESTMENT_TYPES.map((investment) => (
-          <div key={investment.id} className="investment-card">
-            <div className="investment-header">
-              <h3 className="investment-name">{investment.name}</h3>
-              <span className="risk-badge" style={{
-                background: investment.riskLevel <= 2 ? '#10B981' :
-                           investment.riskLevel <= 5 ? '#F59E0B' : '#EF4444'
-              }}>
-                Risk: {investment.riskLevel}/10
-              </span>
-            </div>
-            <p className="investment-description">{investment.description}</p>
-            <div className="investment-details">
-              <div className="detail">
-                <span className="detail-label">💰 Min:</span>
-                <span className="detail-value">${investment.minAmount}</span>
-              </div>
-              <div className="detail">
-                <span className="detail-label">📈 Return:</span>
-                <span className="detail-value">{investment.expectedReturn}</span>
-              </div>
-              <div className="detail">
-                <span className="detail-label">🔄 Liquidity:</span>
-                <span className="detail-value">{investment.liquidity}</span>
-              </div>
-            </div>
-          </div>
+          <InvestmentCard key={investment.id} investment={investment} />
         ))}
       </div>
 
@@ -440,148 +509,38 @@ export default function Explore() {
       {/* Beginner Section */}
       <h3 className="subsection-title">🌱 {sectionTitles.beginnerTopics}</h3>
       <div className="content-grid">
-        {educationalContent.filter(c => c.category === 'Beginner').map((content) => (
-          <div key={content.id} className="content-card-expanded">
-            <span className="content-icon">{content.icon}</span>
-            <div className="content-info">
-              <h3 className="content-title">{content.title}</h3>
-              <div className="content-meta">
-                <span className="content-category">{content.category}</span>
-                <span className="content-duration">{content.duration}</span>
-              </div>
-
-              {/* YouTube Video */}
-              {content.youtubeVideo && (
-                <div className="content-resource">
-                  <a
-                    href={`https://www.youtube.com/watch?v=${content.youtubeVideo.videoId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="video-link"
-                  >
-                    <span className="resource-icon">▶️</span>
-                    <span className="resource-text">Watch: {content.youtubeVideo.title}</span>
-                  </a>
-                </div>
-              )}
-
-              {/* Article */}
-              {content.article && (
-                <div className="content-resource">
-                  <a
-                    href={content.article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="article-link"
-                  >
-                    <span className="resource-icon">📄</span>
-                    <span className="resource-text">Read: {content.article.title}</span>
-                  </a>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
+        {educationalContent
+          .filter((c) => c.category === 'Beginner')
+          .map((content) => (
+            <ContentCard key={content.id} content={content} />
+          ))}
       </div>
 
       {/* Intermediate Section */}
       <h3 className="subsection-title">📈 {sectionTitles.intermediateTopics}</h3>
       <div className="content-grid">
-        {educationalContent.filter(c => c.category === 'Intermediate').map((content) => (
-          <div key={content.id} className="content-card-expanded">
-            <span className="content-icon">{content.icon}</span>
-            <div className="content-info">
-              <h3 className="content-title">{content.title}</h3>
-              <div className="content-meta">
-                <span className="content-category">{content.category}</span>
-                <span className="content-duration">{content.duration}</span>
-              </div>
-
-              {content.youtubeVideo && (
-                <div className="content-resource">
-                  <a
-                    href={`https://www.youtube.com/watch?v=${content.youtubeVideo.videoId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="video-link"
-                  >
-                    <span className="resource-icon">▶️</span>
-                    <span className="resource-text">Watch: {content.youtubeVideo.title}</span>
-                  </a>
-                </div>
-              )}
-
-              {content.article && (
-                <div className="content-resource">
-                  <a
-                    href={content.article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="article-link"
-                  >
-                    <span className="resource-icon">📄</span>
-                    <span className="resource-text">Read: {content.article.title}</span>
-                  </a>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
+        {educationalContent
+          .filter((c) => c.category === 'Intermediate')
+          .map((content) => (
+            <ContentCard key={content.id} content={content} />
+          ))}
       </div>
 
       {/* Advanced Section */}
       <h3 className="subsection-title">🚀 {sectionTitles.advancedTopics}</h3>
       <div className="content-grid">
-        {educationalContent.filter(c => c.category === 'Advanced').map((content) => (
-          <div key={content.id} className="content-card-expanded">
-            <span className="content-icon">{content.icon}</span>
-            <div className="content-info">
-              <h3 className="content-title">{content.title}</h3>
-              <div className="content-meta">
-                <span className="content-category">{content.category}</span>
-                <span className="content-duration">{content.duration}</span>
-              </div>
-
-              {content.youtubeVideo && (
-                <div className="content-resource">
-                  <a
-                    href={`https://www.youtube.com/watch?v=${content.youtubeVideo.videoId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="video-link"
-                  >
-                    <span className="resource-icon">▶️</span>
-                    <span className="resource-text">Watch: {content.youtubeVideo.title}</span>
-                  </a>
-                </div>
-              )}
-
-              {content.article && (
-                <div className="content-resource">
-                  <a
-                    href={content.article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="article-link"
-                  >
-                    <span className="resource-icon">📄</span>
-                    <span className="resource-text">Read: {content.article.title}</span>
-                  </a>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
+        {educationalContent
+          .filter((c) => c.category === 'Advanced')
+          .map((content) => (
+            <ContentCard key={content.id} content={content} />
+          ))}
       </div>
 
       {/* Glossary */}
       <h2 className="section-title">{sectionTitles.keyInvestmentTerms}</h2>
       <div className="glossary-grid">
         {glossary.map((item, index) => (
-          <div key={index} className="glossary-card">
-            <h4 className="glossary-term">{item.term}</h4>
-            <p className="glossary-definition">{item.definition}</p>
-          </div>
+          <GlossaryCard key={index} item={item} index={index} />
         ))}
       </div>
     </div>

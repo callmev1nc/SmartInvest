@@ -6,6 +6,7 @@ import { GoogleGenAI } from '@google/genai';
 import { UMA_SYSTEM_PROMPT, getGreeting } from '@/constants/uma';
 import type { RiskProfile } from '@/constants/investment';
 import { googleAIRateLimiter } from '@/services/rateLimiter';
+import { API_CONFIG, ERROR_MESSAGES } from '@/constants/config';
 
 export interface ChatMessage {
   id: string;
@@ -18,16 +19,16 @@ export interface UmaResponse {
   message: string;
 }
 
-const MODEL = 'gemini-3-pro-preview';
+const MODEL = API_CONFIG.MODEL;
 
 /**
  * Initialize the Google AI client
  */
 function getAIClient() {
-  const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
-    throw new Error('VITE_GEMINI_API_KEY is not set in environment variables');
+    throw new Error(ERROR_MESSAGES.API_KEY_MISSING);
   }
 
   return new GoogleGenAI({

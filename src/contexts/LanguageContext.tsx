@@ -3,6 +3,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { StorageHelper } from '@/utils/storage';
 
 export type Language = 'en' | 'zh' | 'vi';
 
@@ -252,42 +253,38 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   // Load language preference on mount
   useEffect(() => {
-    try {
-      const savedLang = localStorage.getItem(LANGUAGE_KEY) as Language;
-      if (savedLang && ['en', 'zh', 'vi'].includes(savedLang)) {
-        setLanguageState(savedLang);
-      }
-    } catch (error) {
-      console.error('Failed to load language preference:', error);
+    const savedLang = StorageHelper.get<Language>(LANGUAGE_KEY, 'en');
+    if (savedLang && ['en', 'zh', 'vi'].includes(savedLang)) {
+      setLanguageState(savedLang);
     }
   }, []);
 
   const setLanguage = (lang: Language) => {
-    try {
-      localStorage.setItem(LANGUAGE_KEY, lang);
-      setLanguageState(lang);
-    } catch (error) {
-      console.error('Failed to save language preference:', error);
-    }
+    StorageHelper.set(LANGUAGE_KEY, lang);
+    setLanguageState(lang);
   };
 
   const t = (key: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
-    let value: any = translations[language];
+    let value: string | Record<string, unknown> = translations[language];
 
     for (const k of keys) {
-      value = value?.[k];
+      if (typeof value === 'object' && value !== null) {
+        value = (value as Record<string, unknown>)[k] as string | Record<string, unknown>;
+      }
     }
 
     if (typeof value !== 'string') {
       // Fallback to English if translation not found
       value = translations['en'];
       for (const k of keys) {
-        value = value?.[k];
+        if (typeof value === 'object' && value !== null) {
+          value = (value as Record<string, unknown>)[k] as string | Record<string, unknown>;
+        }
       }
     }
 
-    let result = value || key;
+    let result = typeof value === 'string' ? value : key;
 
     // Replace placeholders like {name}, {count}, etc.
     if (params && typeof result === 'string') {

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage, type Language } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Home, MessageSquare, ClipboardList, Compass, Hand, Languages, Moon, Sun } from 'lucide-react';
 import './Layout.css';
@@ -32,7 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Languages size={18} strokeWidth={2} className="language-icon" aria-hidden="true" />
             <select
               value={language}
-              onChange={(e) => setLanguage(e.target.value as any)}
+              onChange={(e) => setLanguage(e.target.value as Language)}
               className="language-dropdown"
               aria-label="Select language"
             >

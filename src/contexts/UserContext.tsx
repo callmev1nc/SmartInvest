@@ -4,6 +4,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { RiskProfile } from '@/constants/investment';
+import { StorageHelper } from '@/utils/storage';
 
 interface UserContextType {
   userName: string | null;
@@ -29,44 +30,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadUserData = () => {
-    try {
-      const name = localStorage.getItem(USER_NAME_KEY);
-      const profile = localStorage.getItem(RISK_PROFILE_KEY) as RiskProfile | null;
+    const name = StorageHelper.get<string | null>(USER_NAME_KEY, null);
+    const profile = StorageHelper.get<RiskProfile | null>(RISK_PROFILE_KEY, null);
 
-      setUserNameState(name);
-      setRiskProfileState(profile);
-    } catch (error) {
-      console.error('Failed to load user data:', error);
-    }
+    setUserNameState(name);
+    setRiskProfileState(profile);
   };
 
   const setUserName = (name: string) => {
-    try {
-      localStorage.setItem(USER_NAME_KEY, name);
-      setUserNameState(name);
-    } catch (error) {
-      console.error('Failed to save user name:', error);
-    }
+    StorageHelper.set(USER_NAME_KEY, name);
+    setUserNameState(name);
   };
 
   const setRiskProfile = (profile: RiskProfile) => {
-    try {
-      localStorage.setItem(RISK_PROFILE_KEY, profile);
-      setRiskProfileState(profile);
-    } catch (error) {
-      console.error('Failed to save risk profile:', error);
-    }
+    StorageHelper.set(RISK_PROFILE_KEY, profile);
+    setRiskProfileState(profile);
   };
 
   const clearUserData = () => {
-    try {
-      localStorage.removeItem(USER_NAME_KEY);
-      localStorage.removeItem(RISK_PROFILE_KEY);
-      setUserNameState(null);
-      setRiskProfileState(null);
-    } catch (error) {
-      console.error('Failed to clear user data:', error);
-    }
+    StorageHelper.remove(USER_NAME_KEY);
+    StorageHelper.remove(RISK_PROFILE_KEY);
+    setUserNameState(null);
+    setRiskProfileState(null);
   };
 
   const isOnboardingComplete = userName !== null;

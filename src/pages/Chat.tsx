@@ -5,6 +5,8 @@ import { chatWithUmaStream } from '@/services/uma';
 import { translateText } from '@/services/translation';
 import { getWelcomeMessage } from '@/constants/uma';
 import { UMA_SUGGESTED_QUESTIONS } from '@/constants/uma';
+import { UI_CONFIG } from '@/constants/config';
+import { StorageHelper } from '@/utils/storage';
 import './Chat.css';
 
 interface Message {
@@ -12,6 +14,17 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date | string;
+}
+
+/**
+ * Limit messages array to MAX_MESSAGES to prevent memory leaks
+ * Keeps only the most recent messages
+ */
+function limitMessages(messages: Message[]): Message[] {
+  if (messages.length > UI_CONFIG.MAX_MESSAGES) {
+    return messages.slice(-UI_CONFIG.MAX_MESSAGES);
+  }
+  return messages;
 }
 
 export default function Chat() {
@@ -33,19 +46,14 @@ export default function Chat() {
   // Load welcome message
   useEffect(() => {
     if (userName && messages.length === 0) {
-      const savedMessages = localStorage.getItem('smartinvest_chat_history');
+      const savedMessages = StorageHelper.get<Message[] | null>('smartinvest_chat_history', null);
       if (savedMessages) {
-        try {
-          const parsed = JSON.parse(savedMessages);
-          // Convert timestamp strings back to Date objects
-          const messagesWithDates = parsed.map((msg: Message) => ({
-            ...msg,
-            timestamp: new Date(msg.timestamp),
-          }));
-          setMessages(messagesWithDates);
-        } catch (error) {
-          console.error('Failed to parse chat history:', error);
-        }
+        // Convert timestamp strings back to Date objects
+        const messagesWithDates = savedMessages.map((msg: Message) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp),
+        }));
+        setMessages(limitMessages(messagesWithDates));
       } else {
         // Add welcome message
         const welcomeMsg: Message = {
@@ -54,7 +62,7 @@ export default function Chat() {
           content: getWelcomeMessage(userName),
           timestamp: new Date(),
         };
-        setMessages([welcomeMsg]);
+        setMessages(limitMessages([welcomeMsg]));
       }
     }
   }, [userName]);
@@ -62,7 +70,7 @@ export default function Chat() {
   // Save chat history
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem('smartinvest_chat_history', JSON.stringify(messages));
+      StorageHelper.set('smartinvest_chat_history', messages);
     }
   }, [messages]);
 
@@ -84,7 +92,7 @@ export default function Chat() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => limitMessages([...prev, userMessage]));
     setInputText('');
     setIsTyping(true);
 
@@ -94,7 +102,7 @@ export default function Chat() {
       let umaResponse = '';
 
       // Create placeholder for Uma's response
-      setMessages((prev) => [
+      setMessages((prev) => limitMessages([
         ...prev,
         {
           id: umaMessageId,
@@ -102,7 +110,7 @@ export default function Chat() {
           content: '',
           timestamp: new Date(),
         },
-      ]);
+      ]));
 
       // Stream the response
       for await (const chunk of chatWithUmaStream(
@@ -148,7 +156,7 @@ export default function Chat() {
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, errorMsg]);
+      setMessages((prev) => limitMessages([...prev, errorMsg]));
     }
   };
 

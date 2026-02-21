@@ -6,6 +6,8 @@
 import { GoogleGenAI } from '@google/genai';
 import type { RiskProfile } from '@/constants/investment';
 import { googleAIRateLimiter } from '@/services/rateLimiter';
+import { API_CONFIG, ERROR_MESSAGES } from '@/constants/config';
+import { StorageHelper } from '@/utils/storage';
 
 export interface DailyUpdate {
   date: string;
@@ -42,10 +44,10 @@ export interface InvestmentOpportunity {
  * Get the API client
  */
 function getAIClient() {
-  const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
-    throw new Error('VITE_GEMINI_API_KEY is not set');
+    throw new Error(ERROR_MESSAGES.API_KEY_MISSING);
   }
 
   return new GoogleGenAI({ apiKey });
@@ -126,7 +128,7 @@ Respond ONLY with valid JSON, no additional text.`;
     // Use rate limiter to stay under 24 RPM
     const response = await googleAIRateLimiter.execute(async () => {
       return await ai.models.generateContentStream({
-        model: 'gemini-3-pro-preview',
+        model: API_CONFIG.MODEL,
         config,
         contents,
       });
@@ -320,60 +322,43 @@ function getFallbackDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate {
  * Get cached daily updates from localStorage
  */
 export function getCachedDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate | null {
-  try {
-    const today = getTodayDate();
-    const cacheKey = `daily_updates_${riskProfile || 'default'}_${today}`;
-    const cached = localStorage.getItem(cacheKey);
-
-    if (cached) {
-      return JSON.parse(cached);
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Error reading cached updates:', error);
-    return null;
-  }
+  const today = getTodayDate();
+  const cacheKey = `daily_updates_${riskProfile || 'default'}_${today}`;
+  return StorageHelper.get<DailyUpdate | null>(cacheKey, null);
 }
 
 /**
  * Cache daily updates in localStorage
  */
 export function cacheDailyUpdates(updates: DailyUpdate): void {
-  try {
-    const cacheKey = `daily_updates_${updates.riskProfile || 'default'}_${updates.date}`;
-    localStorage.setItem(cacheKey, JSON.stringify(updates));
+  const cacheKey = `daily_updates_${updates.riskProfile || 'default'}_${updates.date}`;
+  StorageHelper.set(cacheKey, updates);
 
-    // Clean old cache entries (keep only last 7 days)
-    cleanOldCache();
-  } catch (error) {
-    console.error('Error caching updates:', error);
-  }
+  // Clean old cache entries (keep only last 7 days)
+  cleanOldCache();
 }
 
 /**
  * Clean cache entries older than 7 days
  */
 function cleanOldCache(): void {
-  try {
-    const keys = Object.keys(localStorage);
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    keys.forEach((key) => {
-      if (key.startsWith('daily_updates_')) {
-        const dateMatch = key.match(/\d{4}-\d{2}-\d{2}/);
-        if (dateMatch) {
-          const cacheDate = new Date(dateMatch[0]);
-          if (cacheDate < sevenDaysAgo) {
-            localStorage.removeItem(key);
-          }
+  // Get all keys from localStorage
+  const allKeys = Object.keys(localStorage);
+
+  allKeys.forEach((key) => {
+    if (key.startsWith('daily_updates_')) {
+      const dateMatch = key.match(/\d{4}-\d{2}-\d{2}/);
+      if (dateMatch) {
+        const cacheDate = new Date(dateMatch[0]);
+        if (cacheDate < sevenDaysAgo) {
+          StorageHelper.remove(key);
         }
       }
-    });
-  } catch (error) {
-    console.error('Error cleaning cache:', error);
-  }
+    }
+  });
 }
 
 /**
