@@ -1,17 +1,26 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useUser } from '@/contexts/UserContext';
-import { useLanguage, type Language } from '@/contexts/LanguageContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Home, MessageSquare, ClipboardList, Compass, Hand, Languages, Moon, Sun } from 'lucide-react';
-import './Layout.css';
+import {
+  ClipboardList,
+  Compass,
+  Hand,
+  Home,
+  Languages,
+  MessageSquare,
+  Moon,
+  Sun,
+} from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { type Language, useLanguage } from '@/contexts/LanguageContext'
+import { useTheme } from '@/contexts/ThemeContext'
+import { useUser } from '@/contexts/UserContext'
+import './Layout.css'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-  const { userName } = useUser();
-  const { language, setLanguage, t } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
+  const location = useLocation()
+  const { userName } = useUser()
+  const { language, setLanguage, t } = useLanguage()
+  const { theme, toggleTheme } = useTheme()
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path
 
   return (
     <div className="app">
@@ -45,19 +54,35 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       <nav className="nav" aria-label="Main navigation">
-        <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`} aria-label="Go to home page">
+        <Link
+          to="/"
+          className={`nav-link ${isActive('/') ? 'active' : ''}`}
+          aria-label="Go to home page"
+        >
           <Home size={20} strokeWidth={2} aria-hidden="true" />
           <span>{t('navHome')}</span>
         </Link>
-        <Link to="/chat" className={`nav-link ${isActive('/chat') ? 'active' : ''}`} aria-label="Go to chat page">
+        <Link
+          to="/chat"
+          className={`nav-link ${isActive('/chat') ? 'active' : ''}`}
+          aria-label="Go to chat page"
+        >
           <MessageSquare size={20} strokeWidth={2} aria-hidden="true" />
           <span>{t('navChat')}</span>
         </Link>
-        <Link to="/quiz" className={`nav-link ${isActive('/quiz') ? 'active' : ''}`} aria-label="Go to risk assessment quiz">
+        <Link
+          to="/quiz"
+          className={`nav-link ${isActive('/quiz') ? 'active' : ''}`}
+          aria-label="Go to risk assessment quiz"
+        >
           <ClipboardList size={20} strokeWidth={2} aria-hidden="true" />
           <span>{t('navQuiz')}</span>
         </Link>
-        <Link to="/explore" className={`nav-link ${isActive('/explore') ? 'active' : ''}`} aria-label="Go to explore page">
+        <Link
+          to="/explore"
+          className={`nav-link ${isActive('/explore') ? 'active' : ''}`}
+          aria-label="Go to explore page"
+        >
           <Compass size={20} strokeWidth={2} aria-hidden="true" />
           <span>{t('navExplore')}</span>
         </Link>
@@ -70,13 +95,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main className="main">
-        {children}
-      </main>
+      <main className="main">{children}</main>
 
       <footer className="footer">
         <p>{t('footer')}</p>
       </footer>
     </div>
-  );
+  )
 }

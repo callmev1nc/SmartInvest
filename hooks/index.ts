@@ -2,4 +2,4 @@
  * Custom hooks exports
  */
 
-export { useUser } from '../contexts/UserContext';
+export { useUser } from '../contexts/UserContext'

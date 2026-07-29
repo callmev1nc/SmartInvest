@@ -4,21 +4,21 @@
  */
 
 interface PendingRequest {
-  resolve: (value: any) => void;
-  reject: (reason: any) => void;
-  fn: () => Promise<any>;
+  resolve: (value: any) => void
+  reject: (reason: any) => void
+  fn: () => Promise<any>
 }
 
 export class RateLimiter {
-  private minInterval: number; // milliseconds between requests
-  private maxRequestsPerDay: number;
-  private lastRequestTime: number = 0;
-  private queue: PendingRequest[] = [];
-  private processing = false;
+  private minInterval: number // milliseconds between requests
+  private maxRequestsPerDay: number
+  private lastRequestTime: number = 0
+  private queue: PendingRequest[] = []
+  private processing = false
 
   // Daily tracking
-  private dailyRequestCount: number = 0;
-  private dailyResetTime!: number; // Definitely assigned in constructor via calculateNextReset()
+  private dailyRequestCount: number = 0
+  private dailyResetTime!: number // Definitely assigned in constructor via calculateNextReset()
 
   /**
    * Create a rate limiter
@@ -27,36 +27,36 @@ export class RateLimiter {
    */
   constructor(requestsPerMinute: number, requestsPerDay: number) {
     // Convert to milliseconds between requests, add 10% safety margin
-    this.minInterval = (60000 / requestsPerMinute) * 1.1;
-    this.maxRequestsPerDay = requestsPerDay;
+    this.minInterval = (60000 / requestsPerMinute) * 1.1
+    this.maxRequestsPerDay = requestsPerDay
 
     // Reset daily counter at midnight
-    this.calculateNextReset();
+    this.calculateNextReset()
   }
 
   /**
    * Calculate the next midnight reset time
    */
   private calculateNextReset() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-    this.dailyResetTime = tomorrow.getTime();
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow.setHours(0, 0, 0, 0)
+    this.dailyResetTime = tomorrow.getTime()
   }
 
   /**
    * Check if daily limit has been exceeded
    */
   private checkDailyLimit(): boolean {
-    const now = Date.now();
+    const now = Date.now()
 
     // Reset counter if we've passed the reset time
     if (now >= this.dailyResetTime) {
-      this.dailyRequestCount = 0;
-      this.calculateNextReset();
+      this.dailyRequestCount = 0
+      this.calculateNextReset()
     }
 
-    return this.dailyRequestCount >= this.maxRequestsPerDay;
+    return this.dailyRequestCount >= this.maxRequestsPerDay
   }
 
   /**
@@ -64,9 +64,9 @@ export class RateLimiter {
    */
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     return new Promise((resolve, reject) => {
-      this.queue.push({ resolve, reject, fn });
-      this.processQueue();
-    });
+      this.queue.push({ resolve, reject, fn })
+      this.processQueue()
+    })
   }
 
   /**
@@ -74,56 +74,56 @@ export class RateLimiter {
    */
   private async processQueue() {
     if (this.processing || this.queue.length === 0) {
-      return;
+      return
     }
 
-    this.processing = true;
+    this.processing = true
 
     while (this.queue.length > 0) {
       // Check daily limit
       if (this.checkDailyLimit()) {
         // Reject all remaining requests for today
         while (this.queue.length > 0) {
-          const request = this.queue.shift()!;
-          request.reject(new Error('Daily API quota exceeded. Please try again tomorrow.'));
+          const request = this.queue.shift()!
+          request.reject(new Error('Daily API quota exceeded. Please try again tomorrow.'))
         }
-        this.processing = false;
-        return;
+        this.processing = false
+        return
       }
 
-      const request = this.queue.shift()!;
+      const request = this.queue.shift()!
 
       // Wait until we can make the next request
-      const now = Date.now();
-      const timeSinceLastRequest = now - this.lastRequestTime;
+      const now = Date.now()
+      const timeSinceLastRequest = now - this.lastRequestTime
 
       if (timeSinceLastRequest < this.minInterval) {
-        const waitTime = this.minInterval - timeSinceLastRequest;
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+        const waitTime = this.minInterval - timeSinceLastRequest
+        await new Promise((resolve) => setTimeout(resolve, waitTime))
       }
 
-      this.lastRequestTime = Date.now();
-      this.dailyRequestCount++;
+      this.lastRequestTime = Date.now()
+      this.dailyRequestCount++
 
       try {
-        const result = await request.fn();
-        request.resolve(result);
+        const result = await request.fn()
+        request.resolve(result)
       } catch (error) {
-        request.reject(error);
+        request.reject(error)
       }
     }
 
-    this.processing = false;
+    this.processing = false
   }
 
   /**
    * Get current daily usage
    */
   getDailyUsage(): { used: number; limit: number; remaining: number; resetsAt: Date } {
-    const now = Date.now();
+    const now = Date.now()
     if (now >= this.dailyResetTime) {
-      this.dailyRequestCount = 0;
-      this.calculateNextReset();
+      this.dailyRequestCount = 0
+      this.calculateNextReset()
     }
 
     return {
@@ -131,7 +131,7 @@ export class RateLimiter {
       limit: this.maxRequestsPerDay,
       remaining: this.maxRequestsPerDay - this.dailyRequestCount,
       resetsAt: new Date(this.dailyResetTime),
-    };
+    }
   }
 }
 
@@ -140,4 +140,4 @@ export class RateLimiter {
  * Set to 24 RPM (under the 25 RPM limit)
  * Set to 240 RPD (under the 250 RPD limit)
  */
-export const googleAIRateLimiter = new RateLimiter(24, 240);
+export const googleAIRateLimiter = new RateLimiter(24, 240)

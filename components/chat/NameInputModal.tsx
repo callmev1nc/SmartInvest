@@ -3,62 +3,62 @@
  * This enables Uma to address users personally
  */
 
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
-  View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  Modal,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-} from 'react-native';
-import { useUser } from '@/contexts/UserContext';
-import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
-import { getWelcomeMessage } from '@/constants/uma';
+  View,
+} from 'react-native'
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme'
+import { getWelcomeMessage } from '@/constants/uma'
+import { useUser } from '@/contexts/UserContext'
 
 interface NameInputModalProps {
-  visible: boolean;
-  onClose: () => void;
+  visible: boolean
+  onClose: () => void
 }
 
 export function NameInputModal({ visible, onClose }: NameInputModalProps) {
-  const [name, setName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { setUserName } = useUser();
+  const [name, setName] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { setUserName } = useUser()
 
   const handleSubmit = async () => {
-    const trimmedName = name.trim();
+    const trimmedName = name.trim()
 
     if (!trimmedName) {
-      setError('Please enter your name');
-      return;
+      setError('Please enter your name')
+      return
     }
 
     if (trimmedName.length < 2) {
-      setError('Name must be at least 2 characters');
-      return;
+      setError('Name must be at least 2 characters')
+      return
     }
 
-    setIsLoading(true);
-    setError('');
+    setIsLoading(true)
+    setError('')
 
     try {
-      await setUserName(trimmedName);
+      await setUserName(trimmedName)
 
       // Store the welcome message for Uma to say
       // The chat screen will handle the actual greeting
-      onClose();
+      onClose()
     } catch (error) {
-      setError('Failed to save name. Please try again.');
-      console.error('Error saving name:', error);
+      setError('Failed to save name. Please try again.')
+      console.error('Error saving name:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <Modal
@@ -93,8 +93,8 @@ export function NameInputModal({ visible, onClose }: NameInputModalProps) {
               placeholderTextColor={Colors.textLight}
               value={name}
               onChangeText={(text) => {
-                setName(text);
-                setError('');
+                setName(text)
+                setError('')
               }}
               autoFocus
               maxLength={30}
@@ -103,9 +103,7 @@ export function NameInputModal({ visible, onClose }: NameInputModalProps) {
               onSubmitEditing={handleSubmit}
             />
 
-            {error ? (
-              <Text style={styles.errorText}>{error}</Text>
-            ) : null}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
           </View>
 
           {/* Submit button */}
@@ -128,7 +126,7 @@ export function NameInputModal({ visible, onClose }: NameInputModalProps) {
         </View>
       </KeyboardAvoidingView>
     </Modal>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -214,7 +212,7 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     textAlign: 'center',
   },
-});
+})
 
 const Shadows = {
   md: {
@@ -231,6 +229,6 @@ const Shadows = {
     shadowRadius: 2,
     elevation: 2,
   },
-};
+}
 
-export default NameInputModal;
+export default NameInputModal

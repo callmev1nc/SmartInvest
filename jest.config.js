@@ -23,4 +23,4 @@ module.exports = {
     '^@/utils/(.*)$': '<rootDir>/utils/$1',
     '^@/assets/(.*)$': '<rootDir>/assets/$1',
   },
-};
+}

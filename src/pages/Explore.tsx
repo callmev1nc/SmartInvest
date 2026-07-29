@@ -1,31 +1,31 @@
-import { useState, useEffect, memo } from 'react';
-import { useUser } from '@/contexts/UserContext';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { translateText } from '@/services/translation';
-import { INVESTMENT_TYPES, RISK_PROFILES } from '@/constants/investment';
-import type { RiskProfileInfo } from '@/constants/investment';
-import { DailyUpdates } from '@/components/DailyUpdates';
-import './Explore.css';
+import { memo, useEffect, useState } from 'react'
+import { DailyUpdates } from '@/components/DailyUpdates'
+import type { RiskProfileInfo } from '@/constants/investment'
+import { INVESTMENT_TYPES, RISK_PROFILES } from '@/constants/investment'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { useUser } from '@/contexts/UserContext'
+import { translateText } from '@/services/translation'
+import './Explore.css'
 
 interface EducationalContent {
-  id: string;
-  title: string;
-  category: string;
-  duration: string;
-  icon: string;
+  id: string
+  title: string
+  category: string
+  duration: string
+  icon: string
   youtubeVideo?: {
-    title: string;
-    videoId: string;
-  };
+    title: string
+    videoId: string
+  }
   article?: {
-    title: string;
-    url: string;
-  };
+    title: string
+    url: string
+  }
 }
 
 interface GlossaryItem {
-  term: string;
-  definition: string;
+  term: string
+  definition: string
 }
 
 // Memoized sub-components to prevent unnecessary re-renders
@@ -34,8 +34,8 @@ const CategoryCard = memo(({ profile }: { profile: RiskProfileInfo }) => (
     <h3 className="category-title">{profile.name}</h3>
     <p className="category-description">{profile.description}</p>
   </div>
-));
-CategoryCard.displayName = 'CategoryCard';
+))
+CategoryCard.displayName = 'CategoryCard'
 
 const InvestmentCard = memo(({ investment }: { investment: any }) => (
   <div className="investment-card">
@@ -48,8 +48,8 @@ const InvestmentCard = memo(({ investment }: { investment: any }) => (
             investment.riskLevel <= 2
               ? '#10B981'
               : investment.riskLevel <= 5
-              ? '#F59E0B'
-              : '#EF4444',
+                ? '#F59E0B'
+                : '#EF4444',
         }}
       >
         Risk: {investment.riskLevel}/10
@@ -71,8 +71,8 @@ const InvestmentCard = memo(({ investment }: { investment: any }) => (
       </div>
     </div>
   </div>
-));
-InvestmentCard.displayName = 'InvestmentCard';
+))
+InvestmentCard.displayName = 'InvestmentCard'
 
 const ContentCard = memo(({ content }: { content: EducationalContent }) => (
   <div className="content-card-expanded">
@@ -113,25 +113,25 @@ const ContentCard = memo(({ content }: { content: EducationalContent }) => (
       )}
     </div>
   </div>
-));
-ContentCard.displayName = 'ContentCard';
+))
+ContentCard.displayName = 'ContentCard'
 
 const GlossaryCard = memo(({ item }: { item: GlossaryItem; index: number }) => (
   <div className="glossary-card">
     <h4 className="glossary-term">{item.term}</h4>
     <p className="glossary-definition">{item.definition}</p>
   </div>
-));
-GlossaryCard.displayName = 'GlossaryCard';
+))
+GlossaryCard.displayName = 'GlossaryCard'
 
 export default function Explore() {
-  const { riskProfile } = useUser();
-  const { language } = useLanguage();
+  const { riskProfile } = useUser()
+  const { language } = useLanguage()
   const [translatedContent, setTranslatedContent] = useState<{
-    educationalContent: EducationalContent[];
-    glossary: GlossaryItem[];
-    sectionTitles: Record<string, string>;
-  } | null>(null);
+    educationalContent: EducationalContent[]
+    glossary: GlossaryItem[]
+    sectionTitles: Record<string, string>
+  } | null>(null)
 
   const baseEducationalContent: EducationalContent[] = [
     // BEGINNER TOPICS
@@ -328,7 +328,7 @@ export default function Explore() {
         url: 'https://www.investor.gov/additional-resources/general-resources/publications-research/info-sheets/beginners-guide-asset',
       },
     },
-  ];
+  ]
 
   const baseGlossary: GlossaryItem[] = [
     {
@@ -353,7 +353,7 @@ export default function Explore() {
     },
     {
       term: 'Market Cap',
-      definition: 'Total value of a company\'s outstanding shares of stock',
+      definition: "Total value of a company's outstanding shares of stock",
     },
     {
       term: 'Bull Market',
@@ -369,7 +369,7 @@ export default function Explore() {
     },
     {
       term: 'Volatility',
-      definition: 'How much an investment\'s price fluctuates over time',
+      definition: "How much an investment's price fluctuates over time",
     },
     {
       term: 'Index Fund',
@@ -379,7 +379,7 @@ export default function Explore() {
       term: 'REIT',
       definition: 'Real Estate Investment Trust - company owning income-producing real estate',
     },
-  ];
+  ]
 
   // Translate content when language changes
   useEffect(() => {
@@ -397,8 +397,8 @@ export default function Explore() {
             intermediateTopics: 'Intermediate Topics',
             advancedTopics: 'Advanced Topics',
           },
-        });
-        return;
+        })
+        return
       }
 
       try {
@@ -411,7 +411,7 @@ export default function Explore() {
           beginnerTopics: await translateText('Beginner Topics', language),
           intermediateTopics: await translateText('Intermediate Topics', language),
           advancedTopics: await translateText('Advanced Topics', language),
-        };
+        }
 
         // Translate educational content
         const translatedEducationalContent = await Promise.all(
@@ -419,24 +419,24 @@ export default function Explore() {
             ...content,
             title: await translateText(content.title, language),
             category: await translateText(content.category, language),
-          }))
-        );
+          })),
+        )
 
         // Translate glossary
         const translatedGlossary = await Promise.all(
           baseGlossary.map(async (item) => ({
             term: item.term, // Keep terms in English for reference
             definition: await translateText(item.definition, language),
-          }))
-        );
+          })),
+        )
 
         setTranslatedContent({
           educationalContent: translatedEducationalContent,
           glossary: translatedGlossary,
           sectionTitles,
-        });
+        })
       } catch (error) {
-        console.error('Translation error:', error);
+        console.error('Translation error:', error)
         // Fall back to English content
         setTranslatedContent({
           educationalContent: baseEducationalContent,
@@ -450,15 +450,15 @@ export default function Explore() {
             intermediateTopics: 'Intermediate Topics',
             advancedTopics: 'Advanced Topics',
           },
-        });
+        })
       }
-    };
+    }
 
-    translateContent();
-  }, [language]);
+    translateContent()
+  }, [language])
 
-  const educationalContent = translatedContent?.educationalContent || baseEducationalContent;
-  const glossary = translatedContent?.glossary || baseGlossary;
+  const educationalContent = translatedContent?.educationalContent || baseEducationalContent
+  const glossary = translatedContent?.glossary || baseGlossary
   const sectionTitles = translatedContent?.sectionTitles || {
     investmentOptions: 'Investment Options',
     availableInvestments: 'Available Investments',
@@ -467,7 +467,7 @@ export default function Explore() {
     beginnerTopics: 'Beginner Topics',
     intermediateTopics: 'Intermediate Topics',
     advancedTopics: 'Advanced Topics',
-  };
+  }
 
   return (
     <div className="explore">
@@ -503,7 +503,8 @@ export default function Explore() {
       {/* Educational Content */}
       <h2 className="section-title">{sectionTitles.learnAboutInvesting}</h2>
       <p className="section-subtitle">
-        Curated educational content from top financial educators - all links verified and working! Click to watch or read.
+        Curated educational content from top financial educators - all links verified and working!
+        Click to watch or read.
       </p>
 
       {/* Beginner Section */}
@@ -544,5 +545,5 @@ export default function Explore() {
         ))}
       </div>
     </div>
-  );
+  )
 }

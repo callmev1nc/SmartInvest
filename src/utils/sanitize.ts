@@ -23,7 +23,7 @@
  */
 export function sanitizeUserInput(input: string): string {
   if (typeof input !== 'string') {
-    return '';
+    return ''
   }
 
   return input
@@ -33,7 +33,7 @@ export function sanitizeUserInput(input: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;')
     .replace(/\//g, '&#x2F;')
-    .trim();
+    .trim()
 }
 
 /**
@@ -52,23 +52,21 @@ export function sanitizeUserInput(input: string): string {
  */
 export function sanitizePrompt(prompt: string, maxLength: number = 10000): string {
   if (typeof prompt !== 'string') {
-    return '';
+    return ''
   }
 
   // Remove HTML tags
-  let sanitized = prompt.replace(/<[^>]*>/g, '');
+  let sanitized = prompt.replace(/<[^>]*>/g, '')
 
   // Remove potentially dangerous patterns
-  sanitized = sanitized
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, ''); // Remove event handlers like onclick=
+  sanitized = sanitized.replace(/javascript:/gi, '').replace(/on\w+\s*=/gi, '') // Remove event handlers like onclick=
 
   // Limit length
   if (sanitized.length > maxLength) {
-    sanitized = sanitized.slice(0, maxLength);
+    sanitized = sanitized.slice(0, maxLength)
   }
 
-  return sanitized.trim();
+  return sanitized.trim()
 }
 
 /**
@@ -87,21 +85,21 @@ export function sanitizePrompt(prompt: string, maxLength: number = 10000): strin
  */
 export function sanitizeName(name: string, maxLength: number = 50): string {
   if (typeof name !== 'string') {
-    return '';
+    return ''
   }
 
   // Remove HTML tags and special characters
-  let sanitized = name.replace(/<[^>]*>/g, '');
+  let sanitized = name.replace(/<[^>]*>/g, '')
 
   // Allow only letters, spaces, hyphens, apostrophes, and common name characters
-  sanitized = sanitized.replace(/[^a-zA-Z\u00C0-\u00FF\u0100-\u017F\s\-']/g, '');
+  sanitized = sanitized.replace(/[^a-zA-Z\u00C0-\u00FF\u0100-\u017F\s\-']/g, '')
 
   // Limit length
   if (sanitized.length > maxLength) {
-    sanitized = sanitized.slice(0, maxLength);
+    sanitized = sanitized.slice(0, maxLength)
   }
 
-  return sanitized.trim();
+  return sanitized.trim()
 }
 
 /**
@@ -112,19 +110,19 @@ export function sanitizeName(name: string, maxLength: number = 50): string {
  */
 export function sanitizeEmail(email: string): string {
   if (typeof email !== 'string') {
-    return '';
+    return ''
   }
 
-  const sanitized = email.trim().toLowerCase();
+  const sanitized = email.trim().toLowerCase()
 
   // Basic email validation regex
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
   if (!emailRegex.test(sanitized)) {
-    return '';
+    return ''
   }
 
-  return sanitized;
+  return sanitized
 }
 
 /**
@@ -135,7 +133,7 @@ export function sanitizeEmail(email: string): string {
  */
 export function sanitizeURLSchemes(input: string): string {
   if (typeof input !== 'string') {
-    return '';
+    return ''
   }
 
   return input
@@ -143,7 +141,7 @@ export function sanitizeURLSchemes(input: string): string {
     .replace(/data:/gi, '')
     .replace(/vbscript:/gi, '')
     .replace(/onload\s*=/gi, '')
-    .replace(/onerror\s*=/gi, '');
+    .replace(/onerror\s*=/gi, '')
 }
 
 /**
@@ -154,10 +152,10 @@ export function sanitizeURLSchemes(input: string): string {
  */
 export function escapeRegExp(string: string): string {
   if (typeof string !== 'string') {
-    return '';
+    return ''
   }
 
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 /**
@@ -170,14 +168,14 @@ export function escapeRegExp(string: string): string {
  */
 export function truncateText(text: string, maxLength: number, suffix: string = '...'): string {
   if (typeof text !== 'string') {
-    return '';
+    return ''
   }
 
   if (text.length <= maxLength) {
-    return text;
+    return text
   }
 
-  return text.slice(0, maxLength - suffix.length) + suffix;
+  return text.slice(0, maxLength - suffix.length) + suffix
 }
 
 /**
@@ -188,7 +186,7 @@ export function truncateText(text: string, maxLength: number, suffix: string = '
  */
 export function sanitizeAndParseJSON<T>(jsonString: string): T | null {
   if (typeof jsonString !== 'string') {
-    return null;
+    return null
   }
 
   try {
@@ -196,18 +194,18 @@ export function sanitizeAndParseJSON<T>(jsonString: string): T | null {
     const sanitized = jsonString
       .replace(/<script[^>]*>.*?<\/script>/gi, '')
       .replace(/javascript:/gi, '')
-      .replace(/on\w+\s*=/gi, '');
+      .replace(/on\w+\s*=/gi, '')
 
-    const parsed = JSON.parse(sanitized);
+    const parsed = JSON.parse(sanitized)
 
     // Basic validation: ensure it's an object or array
     if (typeof parsed === 'object' && parsed !== null) {
-      return parsed as T;
+      return parsed as T
     }
 
-    return null;
+    return null
   } catch {
-    return null;
+    return null
   }
 }
 
@@ -220,25 +218,25 @@ export function sanitizeAndParseJSON<T>(jsonString: string): T | null {
  */
 export function sanitizeChatMessage(message: string): string {
   if (typeof message !== 'string') {
-    return '';
+    return ''
   }
 
-  let sanitized = message;
+  let sanitized = message
 
   // Remove HTML tags
-  sanitized = sanitized.replace(/<[^>]*>/g, '');
+  sanitized = sanitized.replace(/<[^>]*>/g, '')
 
   // Remove dangerous URL schemes
-  sanitized = sanitizeURLSchemes(sanitized);
+  sanitized = sanitizeURLSchemes(sanitized)
 
   // Sanitize for DOM rendering
-  sanitized = sanitizeUserInput(sanitized);
+  sanitized = sanitizeUserInput(sanitized)
 
   // Limit length (reasonable chat message size)
-  const MAX_CHAT_LENGTH = 5000;
+  const MAX_CHAT_LENGTH = 5000
   if (sanitized.length > MAX_CHAT_LENGTH) {
-    sanitized = truncateText(sanitized, MAX_CHAT_LENGTH);
+    sanitized = truncateText(sanitized, MAX_CHAT_LENGTH)
   }
 
-  return sanitized;
+  return sanitized
 }

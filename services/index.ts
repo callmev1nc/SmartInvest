@@ -2,4 +2,4 @@
  * Service exports
  */
 
-export * from './uma';
+export * from './uma'

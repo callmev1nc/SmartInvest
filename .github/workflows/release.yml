@@ -1,0 +1,19 @@
+# OPTIONAL — auto-release from Conventional Commits. Enable only for apps/libs you ship.
+# Requires: (1) squash-merge so the PR title becomes the squashed commit, and
+# (2) conventional-commit PR titles (enforce with amannn/action-semantic-pull-request).
+#
+# To enable: rename this file to release.yml (remove the leading underscore) and adjust release-type.
+# name: Release
+# on:
+#   push:
+#     branches: [main]
+# permissions:
+#   contents: write
+#   pull-requests: write
+# jobs:
+#   release-please:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: googleapis/release-please-action@v4
+#         with:
+#           release-type: node        # use 'simple' for apps, 'node' for npm libs

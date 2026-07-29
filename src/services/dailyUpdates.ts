@@ -3,71 +3,69 @@
  * Uses Google Gemini AI to provide daily market insights and recommendations
  */
 
-import { GoogleGenAI } from '@google/genai';
-import type { RiskProfile } from '@/constants/investment';
-import { googleAIRateLimiter } from '@/services/rateLimiter';
-import { API_CONFIG, ERROR_MESSAGES } from '@/constants/config';
-import { StorageHelper } from '@/utils/storage';
+import { GoogleGenAI } from '@google/genai'
+import { API_CONFIG, ERROR_MESSAGES } from '@/constants/config'
+import type { RiskProfile } from '@/constants/investment'
+import { googleAIRateLimiter } from '@/services/rateLimiter'
+import { StorageHelper } from '@/utils/storage'
 
 export interface DailyUpdate {
-  date: string;
-  riskProfile: RiskProfile | null;
+  date: string
+  riskProfile: RiskProfile | null
   markets: {
-    stocks: MarketUpdate;
-    crypto: MarketUpdate;
-    realEstate: MarketUpdate;
-    international: MarketUpdate;
-    alternativeInvestments: MarketUpdate;
-  };
-  opportunities: InvestmentOpportunity[];
-  summary: string;
+    stocks: MarketUpdate
+    crypto: MarketUpdate
+    realEstate: MarketUpdate
+    international: MarketUpdate
+    alternativeInvestments: MarketUpdate
+  }
+  opportunities: InvestmentOpportunity[]
+  summary: string
 }
 
 export interface MarketUpdate {
-  trend: 'up' | 'down' | 'neutral';
-  summary: string;
-  keyPoints: string[];
+  trend: 'up' | 'down' | 'neutral'
+  summary: string
+  keyPoints: string[]
 }
 
 export interface InvestmentOpportunity {
-  category: string;
-  name: string;
-  description: string;
-  riskLevel: number;
-  expectedReturn: string;
-  timeHorizon: string;
-  action: 'buy' | 'hold' | 'sell' | 'watch';
-  reason: string;
+  category: string
+  name: string
+  description: string
+  riskLevel: number
+  expectedReturn: string
+  timeHorizon: string
+  action: 'buy' | 'hold' | 'sell' | 'watch'
+  reason: string
 }
 
 /**
  * Get the API client
  */
 function getAIClient() {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
 
   if (!apiKey) {
-    throw new Error(ERROR_MESSAGES.API_KEY_MISSING);
+    throw new Error(ERROR_MESSAGES.API_KEY_MISSING)
   }
 
-  return new GoogleGenAI({ apiKey });
+  return new GoogleGenAI({ apiKey })
 }
 
 /**
  * Get today's date in YYYY-MM-DD format
  */
 function getTodayDate(): string {
-  return new Date().toISOString().split('T')[0];
+  return new Date().toISOString().split('T')[0]
 }
 
 /**
  * Generate personalized daily investment updates using Gemini AI
  */
-export async function generateDailyUpdates(
-  riskProfile: RiskProfile | null
-): Promise<DailyUpdate> {
+export async function generateDailyUpdates(riskProfile: RiskProfile | null): Promise<DailyUpdate> {
   try {
-    const ai = getAIClient();
+    const ai = getAIClient()
 
     const prompt = `You are an expert financial analyst providing daily investment updates for ${new Date().toLocaleDateString()}.
 
@@ -108,7 +106,7 @@ IMPORTANT:
   ]
 }
 
-Respond ONLY with valid JSON, no additional text.`;
+Respond ONLY with valid JSON, no additional text.`
 
     const config = {
       tools: [
@@ -116,14 +114,14 @@ Respond ONLY with valid JSON, no additional text.`;
           googleSearch: {},
         },
       ],
-    };
+    }
 
     const contents = [
       {
         role: 'user',
         parts: [{ text: prompt }],
       },
-    ];
+    ]
 
     // Use rate limiter to stay under 24 RPM
     const response = await googleAIRateLimiter.execute(async () => {
@@ -131,40 +129,60 @@ Respond ONLY with valid JSON, no additional text.`;
         model: API_CONFIG.MODEL,
         config,
         contents,
-      });
-    });
+      })
+    })
 
-    let fullResponse = '';
+    let fullResponse = ''
     for await (const chunk of response) {
-      fullResponse += chunk.text;
+      fullResponse += chunk.text
     }
 
     // Parse JSON response
-    const jsonMatch = fullResponse.match(/\{[\s\S]*\}/);
+    const jsonMatch = fullResponse.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
-      throw new Error('Invalid AI response format');
+      throw new Error('Invalid AI response format')
     }
 
-    const aiData = JSON.parse(jsonMatch[0]);
+    const aiData = JSON.parse(jsonMatch[0])
 
     return {
       date: getTodayDate(),
       riskProfile,
       markets: {
-        stocks: aiData.stocks || { trend: 'neutral', summary: 'Market data unavailable', keyPoints: [] },
-        crypto: aiData.crypto || { trend: 'neutral', summary: 'Market data unavailable', keyPoints: [] },
-        realEstate: aiData.realEstate || { trend: 'neutral', summary: 'Market data unavailable', keyPoints: [] },
-        international: aiData.international || { trend: 'neutral', summary: 'Market data unavailable', keyPoints: [] },
-        alternativeInvestments: aiData.alternativeInvestments || { trend: 'neutral', summary: 'Market data unavailable', keyPoints: [] },
+        stocks: aiData.stocks || {
+          trend: 'neutral',
+          summary: 'Market data unavailable',
+          keyPoints: [],
+        },
+        crypto: aiData.crypto || {
+          trend: 'neutral',
+          summary: 'Market data unavailable',
+          keyPoints: [],
+        },
+        realEstate: aiData.realEstate || {
+          trend: 'neutral',
+          summary: 'Market data unavailable',
+          keyPoints: [],
+        },
+        international: aiData.international || {
+          trend: 'neutral',
+          summary: 'Market data unavailable',
+          keyPoints: [],
+        },
+        alternativeInvestments: aiData.alternativeInvestments || {
+          trend: 'neutral',
+          summary: 'Market data unavailable',
+          keyPoints: [],
+        },
       },
       opportunities: aiData.opportunities || [],
       summary: aiData.summary || 'Market update for today',
-    };
+    }
   } catch (error) {
-    console.error('Error generating daily updates:', error);
+    console.error('Error generating daily updates:', error)
 
     // Return fallback data
-    return getFallbackDailyUpdates(riskProfile);
+    return getFallbackDailyUpdates(riskProfile)
   }
 }
 
@@ -178,7 +196,8 @@ function getFallbackDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate {
     markets: {
       stocks: {
         trend: 'neutral',
-        summary: 'Markets are showing mixed signals today. Stay diversified and focused on long-term goals.',
+        summary:
+          'Markets are showing mixed signals today. Stay diversified and focused on long-term goals.',
         keyPoints: [
           'S&P 500 holding steady',
           'Tech stocks showing volatility',
@@ -241,7 +260,10 @@ function getFallbackDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate {
         expectedReturn: 'Highly variable',
         timeHorizon: '3+ years',
         action: riskProfile === 'growth' ? 'watch' : 'hold',
-        reason: riskProfile === 'growth' ? 'Only for aggressive growth investors' : 'Too volatile for your profile',
+        reason:
+          riskProfile === 'growth'
+            ? 'Only for aggressive growth investors'
+            : 'Too volatile for your profile',
       },
       {
         category: 'Real Estate',
@@ -261,7 +283,10 @@ function getFallbackDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate {
         expectedReturn: '3-5% annually',
         timeHorizon: '1-10 years',
         action: riskProfile === 'conservative' ? 'buy' : 'hold',
-        reason: riskProfile === 'conservative' ? 'Safe haven for conservative investors' : 'Keep as stabilizer',
+        reason:
+          riskProfile === 'conservative'
+            ? 'Safe haven for conservative investors'
+            : 'Keep as stabilizer',
       },
       {
         category: 'Stocks',
@@ -271,7 +296,8 @@ function getFallbackDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate {
         expectedReturn: '10-15% annually',
         timeHorizon: '5+ years',
         action: riskProfile === 'growth' ? 'buy' : 'watch',
-        reason: riskProfile === 'growth' ? 'High growth potential' : 'Too volatile for your risk level',
+        reason:
+          riskProfile === 'growth' ? 'High growth potential' : 'Too volatile for your risk level',
       },
       {
         category: 'International',
@@ -314,58 +340,59 @@ function getFallbackDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate {
         reason: 'Defensive sector with aging population tailwind',
       },
     ],
-    summary: 'Daily market update: Markets are navigating through uncertainty. Stay focused on your long-term investment goals and maintain proper diversification.',
-  };
+    summary:
+      'Daily market update: Markets are navigating through uncertainty. Stay focused on your long-term investment goals and maintain proper diversification.',
+  }
 }
 
 /**
  * Get cached daily updates from localStorage
  */
 export function getCachedDailyUpdates(riskProfile: RiskProfile | null): DailyUpdate | null {
-  const today = getTodayDate();
-  const cacheKey = `daily_updates_${riskProfile || 'default'}_${today}`;
-  return StorageHelper.get<DailyUpdate | null>(cacheKey, null);
+  const today = getTodayDate()
+  const cacheKey = `daily_updates_${riskProfile || 'default'}_${today}`
+  return StorageHelper.get<DailyUpdate | null>(cacheKey, null)
 }
 
 /**
  * Cache daily updates in localStorage
  */
 export function cacheDailyUpdates(updates: DailyUpdate): void {
-  const cacheKey = `daily_updates_${updates.riskProfile || 'default'}_${updates.date}`;
-  StorageHelper.set(cacheKey, updates);
+  const cacheKey = `daily_updates_${updates.riskProfile || 'default'}_${updates.date}`
+  StorageHelper.set(cacheKey, updates)
 
   // Clean old cache entries (keep only last 7 days)
-  cleanOldCache();
+  cleanOldCache()
 }
 
 /**
  * Clean cache entries older than 7 days
  */
 function cleanOldCache(): void {
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
   // Get all keys from localStorage
-  const allKeys = Object.keys(localStorage);
+  const allKeys = Object.keys(localStorage)
 
   allKeys.forEach((key) => {
     if (key.startsWith('daily_updates_')) {
-      const dateMatch = key.match(/\d{4}-\d{2}-\d{2}/);
+      const dateMatch = key.match(/\d{4}-\d{2}-\d{2}/)
       if (dateMatch) {
-        const cacheDate = new Date(dateMatch[0]);
+        const cacheDate = new Date(dateMatch[0])
         if (cacheDate < sevenDaysAgo) {
-          StorageHelper.remove(key);
+          StorageHelper.remove(key)
         }
       }
     }
-  });
+  })
 }
 
 /**
  * Check if updates are available for today
  */
 export function hasTodaysUpdates(riskProfile: RiskProfile | null): boolean {
-  return getCachedDailyUpdates(riskProfile) !== null;
+  return getCachedDailyUpdates(riskProfile) !== null
 }
 
 /**
@@ -373,21 +400,21 @@ export function hasTodaysUpdates(riskProfile: RiskProfile | null): boolean {
  */
 export async function getDailyUpdates(
   riskProfile: RiskProfile | null,
-  forceRefresh = false
+  forceRefresh = false,
 ): Promise<DailyUpdate> {
   // Check cache first
   if (!forceRefresh) {
-    const cached = getCachedDailyUpdates(riskProfile);
+    const cached = getCachedDailyUpdates(riskProfile)
     if (cached) {
-      return cached;
+      return cached
     }
   }
 
   // Generate new updates
-  const updates = await generateDailyUpdates(riskProfile);
+  const updates = await generateDailyUpdates(riskProfile)
 
   // Cache the updates
-  cacheDailyUpdates(updates);
+  cacheDailyUpdates(updates)
 
-  return updates;
+  return updates
 }

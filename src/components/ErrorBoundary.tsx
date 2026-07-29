@@ -8,19 +8,19 @@
  * @see https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
  */
 
-import React from 'react';
-import './ErrorBoundary.css';
+import React from 'react'
+import './ErrorBoundary.css'
 
 interface ErrorBoundaryProps {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+  children: React.ReactNode
+  fallback?: React.ReactNode
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
 }
 
 interface ErrorBoundaryState {
-  hasError: boolean;
-  error?: Error;
-  errorInfo?: React.ErrorInfo;
+  hasError: boolean
+  error?: Error
+  errorInfo?: React.ErrorInfo
 }
 
 /**
@@ -38,8 +38,8 @@ interface ErrorBoundaryState {
  */
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
+    super(props)
+    this.state = { hasError: false }
   }
 
   /**
@@ -49,7 +49,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return {
       hasError: true,
       error,
-    };
+    }
   }
 
   /**
@@ -57,18 +57,18 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
    */
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log to console for development
-    console.error('Error Boundary caught an error:', error);
-    console.error('Error Info:', errorInfo);
+    console.error('Error Boundary caught an error:', error)
+    console.error('Error Info:', errorInfo)
 
     // Call custom error handler if provided
     if (this.props.onError) {
-      this.props.onError(error, errorInfo);
+      this.props.onError(error, errorInfo)
     }
 
     // Update state with error info
     this.setState({
       errorInfo,
-    });
+    })
   }
 
   /**
@@ -76,14 +76,14 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
    * Useful when you want to retry the failed component
    */
   resetErrorBoundary = (): void => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-  };
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined })
+  }
 
   render(): React.ReactNode {
     if (this.state.hasError) {
       // Use custom fallback if provided
       if (this.props.fallback) {
-        return this.props.fallback;
+        return this.props.fallback
       }
 
       // Default error UI
@@ -93,8 +93,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             <div className="error-icon">⚠️</div>
             <h1 className="error-title">Something went wrong</h1>
             <p className="error-message">
-              We're sorry, but something unexpected happened. The error has been logged
-              and our team will look into it.
+              We're sorry, but something unexpected happened. The error has been logged and our team
+              will look into it.
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
@@ -140,10 +140,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             </p>
           </div>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }
 
@@ -161,10 +161,10 @@ export function ErrorBoundaryFallback({
   children,
   fallback,
 }: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  children: React.ReactNode
+  fallback?: React.ReactNode
 }): JSX.Element {
-  return <ErrorBoundary fallback={fallback}>{children}</ErrorBoundary>;
+  return <ErrorBoundary fallback={fallback}>{children}</ErrorBoundary>
 }
 
-export default ErrorBoundary;
+export default ErrorBoundary

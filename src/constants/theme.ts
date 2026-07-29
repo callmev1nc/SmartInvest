@@ -24,7 +24,7 @@ export const Colors = {
   chatUma: '#F3F4F6',
   chatUserText: '#FFFFFF',
   chatUmaText: '#111827',
-};
+}
 
 export const Spacing = {
   xs: '4px',
@@ -33,7 +33,7 @@ export const Spacing = {
   lg: '24px',
   xl: '32px',
   xxl: '48px',
-};
+}
 
 export const BorderRadius = {
   sm: '4px',
@@ -41,10 +41,10 @@ export const BorderRadius = {
   lg: '12px',
   xl: '16px',
   full: '9999px',
-};
+}
 
 export default {
   Colors,
   Spacing,
   BorderRadius,
-};
+}

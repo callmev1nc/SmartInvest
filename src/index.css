@@ -1,25 +1,25 @@
 :root {
   /* Colors */
-  --primary: #4F46E5;
-  --primary-dark: #4338CA;
-  --primary-light: #818CF8;
-  --secondary: #10B981;
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --primary-light: #818cf8;
+  --secondary: #10b981;
   --secondary-dark: #059669;
-  --background: #FFFFFF;
-  --background-secondary: #F9FAFB;
+  --background: #ffffff;
+  --background-secondary: #f9fafb;
   --text: #111827;
-  --text-secondary: #6B7280;
-  --text-light: #9CA3AF;
-  --border: #E5E7EB;
-  --error: #EF4444;
-  --warning: #F59E0B;
-  --success: #10B981;
-  --info: #3B82F6;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+  --border: #e5e7eb;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --success: #10b981;
+  --info: #3b82f6;
 
   /* Chat specific colors */
-  --chat-user: #4F46E5;
-  --chat-uma: #F3F4F6;
-  --chat-user-text: #FFFFFF;
+  --chat-user: #4f46e5;
+  --chat-uma: #f3f4f6;
+  --chat-user-text: #ffffff;
   --chat-uma-text: #111827;
 
   /* Spacing */
@@ -40,27 +40,27 @@
 
 /* Dark Theme */
 [data-theme="dark"] {
-  --primary: #818CF8;
-  --primary-dark: #6366F1;
-  --primary-light: #A5B4FC;
-  --secondary: #34D399;
-  --secondary-dark: #10B981;
-  --background: #0F172A;
-  --background-secondary: #1E293B;
-  --text: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-light: #64748B;
+  --primary: #818cf8;
+  --primary-dark: #6366f1;
+  --primary-light: #a5b4fc;
+  --secondary: #34d399;
+  --secondary-dark: #10b981;
+  --background: #0f172a;
+  --background-secondary: #1e293b;
+  --text: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-light: #64748b;
   --border: #334155;
-  --error: #F87171;
-  --warning: #FBBF24;
-  --success: #34D399;
-  --info: #60A5FA;
+  --error: #f87171;
+  --warning: #fbbf24;
+  --success: #34d399;
+  --info: #60a5fa;
 
   /* Chat specific colors for dark mode */
-  --chat-user: #6366F1;
-  --chat-uma: #1E293B;
-  --chat-user-text: #FFFFFF;
-  --chat-uma-text: #F1F5F9;
+  --chat-user: #6366f1;
+  --chat-uma: #1e293b;
+  --chat-user-text: #ffffff;
+  --chat-uma-text: #f1f5f9;
 }
 
 * {
@@ -70,7 +70,7 @@
 }
 
 body {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--text);
@@ -102,17 +102,34 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.2;
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
-h5 { font-size: 1rem; }
-h6 { font-size: 0.875rem; }
+h1 {
+  font-size: 2.5rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+h4 {
+  font-size: 1.25rem;
+}
+h5 {
+  font-size: 1rem;
+}
+h6 {
+  font-size: 0.875rem;
+}
 
 p {
   line-height: 1.6;
@@ -133,26 +150,57 @@ button {
   cursor: pointer;
 }
 
-input, textarea {
+input,
+textarea {
   font-family: inherit;
 }
 
 /* Utility classes */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
 
-.mt-1 { margin-top: var(--spacing-sm); }
-.mt-2 { margin-top: var(--spacing-md); }
-.mt-3 { margin-top: var(--spacing-lg); }
-.mt-4 { margin-top: var(--spacing-xl); }
+.mt-1 {
+  margin-top: var(--spacing-sm);
+}
+.mt-2 {
+  margin-top: var(--spacing-md);
+}
+.mt-3 {
+  margin-top: var(--spacing-lg);
+}
+.mt-4 {
+  margin-top: var(--spacing-xl);
+}
 
-.mb-1 { margin-bottom: var(--spacing-sm); }
-.mb-2 { margin-bottom: var(--spacing-md); }
-.mb-3 { margin-bottom: var(--spacing-lg); }
-.mb-4 { margin-bottom: var(--spacing-xl); }
+.mb-1 {
+  margin-bottom: var(--spacing-sm);
+}
+.mb-2 {
+  margin-bottom: var(--spacing-md);
+}
+.mb-3 {
+  margin-bottom: var(--spacing-lg);
+}
+.mb-4 {
+  margin-bottom: var(--spacing-xl);
+}
 
-.p-1 { padding: var(--spacing-sm); }
-.p-2 { padding: var(--spacing-md); }
-.p-3 { padding: var(--spacing-lg); }
-.p-4 { padding: var(--spacing-xl); }
+.p-1 {
+  padding: var(--spacing-sm);
+}
+.p-2 {
+  padding: var(--spacing-md);
+}
+.p-3 {
+  padding: var(--spacing-lg);
+}
+.p-4 {
+  padding: var(--spacing-xl);
+}

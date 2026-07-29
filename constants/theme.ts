@@ -24,7 +24,7 @@ export const Colors = {
   chatUma: '#F3F4F6',
   chatUserText: '#FFFFFF',
   chatUmaText: '#111827',
-};
+}
 
 export const Typography = {
   h1: {
@@ -62,7 +62,7 @@ export const Typography = {
     fontWeight: '400' as const,
     lineHeight: 16,
   },
-};
+}
 
 export const Spacing = {
   xs: 4,
@@ -71,7 +71,7 @@ export const Spacing = {
   lg: 24,
   xl: 32,
   xxl: 48,
-};
+}
 
 export const BorderRadius = {
   sm: 4,
@@ -79,7 +79,7 @@ export const BorderRadius = {
   lg: 12,
   xl: 16,
   full: 9999,
-};
+}
 
 export const Shadows = {
   sm: {
@@ -103,7 +103,7 @@ export const Shadows = {
     shadowRadius: 8,
     elevation: 8,
   },
-};
+}
 
 export const theme = {
   Colors,
@@ -111,6 +111,6 @@ export const theme = {
   Spacing,
   BorderRadius,
   Shadows,
-};
+}
 
-export default theme;
+export default theme

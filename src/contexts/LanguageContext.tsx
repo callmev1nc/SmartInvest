@@ -2,20 +2,20 @@
  * LanguageContext - Manages language preference for the app
  */
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { StorageHelper } from '@/utils/storage';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
+import { StorageHelper } from '@/utils/storage'
 
-export type Language = 'en' | 'zh' | 'vi';
+export type Language = 'en' | 'zh' | 'vi'
 
 interface LanguageContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string, params?: Record<string, string | number>) => string;
+  language: Language
+  setLanguage: (lang: Language) => void
+  t: (key: string, params?: Record<string, string | number>) => string
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
-const LANGUAGE_KEY = 'smartinvest_language';
+const LANGUAGE_KEY = 'smartinvest_language'
 
 const translations: Record<Language, Record<string, string>> = {
   en: {
@@ -51,9 +51,11 @@ const translations: Record<Language, Record<string, string>> = {
     // Tips
     tipsTitle: 'Tips for Your Savings',
     tip1Title: 'Start Small, Think Big',
-    tip1Text: 'Even small investments can grow significantly over time. The key is consistency and starting early.',
+    tip1Text:
+      'Even small investments can grow significantly over time. The key is consistency and starting early.',
     tip2Title: 'Diversify Your Portfolio',
-    tip2Text: "Don't put all your eggs in one basket. Spread investments across different asset classes to manage risk.",
+    tip2Text:
+      "Don't put all your eggs in one basket. Spread investments across different asset classes to manage risk.",
 
     // Quiz
     quizTitle: 'Risk Assessment Quiz',
@@ -203,9 +205,11 @@ const translations: Record<Language, Record<string, string>> = {
     // Tips
     tipsTitle: 'Mẹo Cho Tiết Kiệm Của Bạn',
     tip1Title: 'Bắt Đầu Nhỏ, Nghĩ Lớn',
-    tip1Text: 'Kể cả khoản đầu tư nhỏ cũng có thể tăng trưởng đáng kể theo thời gian. Chìa khóa là sự nhất quán và bắt đầu sớm.',
+    tip1Text:
+      'Kể cả khoản đầu tư nhỏ cũng có thể tăng trưởng đáng kể theo thời gian. Chìa khóa là sự nhất quán và bắt đầu sớm.',
     tip2Title: 'Đa Dạng Hóa Danh Mục Đầu Tư',
-    tip2Text: 'Đừng bỏ tất cả trứng vào một giỏ. Phân bổ đầu tư qua các lớp tài sản khác nhau để quản lý rủi ro.',
+    tip2Text:
+      'Đừng bỏ tất cả trứng vào một giỏ. Phân bổ đầu tư qua các lớp tài sản khác nhau để quản lý rủi ro.',
 
     // Quiz
     quizTitle: 'Bài Trắc Nghiệm Đánh Giá Rủi Ro',
@@ -246,56 +250,56 @@ const translations: Record<Language, Record<string, string>> = {
     // Footer
     footer: '© 2025 SmartInvest - Mang đến quyết định đầu tư thông minh cho mọi người',
   },
-};
+}
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>('en')
 
   // Load language preference on mount
   useEffect(() => {
-    const savedLang = StorageHelper.get<Language>(LANGUAGE_KEY, 'en');
+    const savedLang = StorageHelper.get<Language>(LANGUAGE_KEY, 'en')
     if (savedLang && ['en', 'zh', 'vi'].includes(savedLang)) {
-      setLanguageState(savedLang);
+      setLanguageState(savedLang)
     }
-  }, []);
+  }, [])
 
   const setLanguage = (lang: Language) => {
-    StorageHelper.set(LANGUAGE_KEY, lang);
-    setLanguageState(lang);
-  };
+    StorageHelper.set(LANGUAGE_KEY, lang)
+    setLanguageState(lang)
+  }
 
   const t = (key: string, params?: Record<string, string | number>): string => {
-    const keys = key.split('.');
-    let value: string | Record<string, unknown> = translations[language];
+    const keys = key.split('.')
+    let value: string | Record<string, unknown> = translations[language]
 
     for (const k of keys) {
       if (typeof value === 'object' && value !== null) {
-        value = (value as Record<string, unknown>)[k] as string | Record<string, unknown>;
+        value = (value as Record<string, unknown>)[k] as string | Record<string, unknown>
       }
     }
 
     if (typeof value !== 'string') {
       // Fallback to English if translation not found
-      value = translations['en'];
+      value = translations['en']
       for (const k of keys) {
         if (typeof value === 'object' && value !== null) {
-          value = (value as Record<string, unknown>)[k] as string | Record<string, unknown>;
+          value = (value as Record<string, unknown>)[k] as string | Record<string, unknown>
         }
       }
     }
 
-    let result = typeof value === 'string' ? value : key;
+    let result = typeof value === 'string' ? value : key
 
     // Replace placeholders like {name}, {count}, etc.
     if (params && typeof result === 'string') {
-      Object.keys(params).forEach(paramKey => {
-        const placeholder = `{${paramKey}}`;
-        result = result.replace(new RegExp(placeholder, 'g'), String(params[paramKey]));
-      });
+      Object.keys(params).forEach((paramKey) => {
+        const placeholder = `{${paramKey}}`
+        result = result.replace(new RegExp(placeholder, 'g'), String(params[paramKey]))
+      })
     }
 
-    return result;
-  };
+    return result
+  }
 
   return (
     <LanguageContext.Provider
@@ -307,13 +311,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     >
       {children}
     </LanguageContext.Provider>
-  );
+  )
 }
 
 export function useLanguage() {
-  const context = useContext(LanguageContext);
+  const context = useContext(LanguageContext)
   if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    throw new Error('useLanguage must be used within a LanguageProvider')
   }
-  return context;
+  return context
 }

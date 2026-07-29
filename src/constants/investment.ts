@@ -2,17 +2,17 @@
  * Investment types and risk profile configurations
  */
 
-export type RiskProfile = 'conservative' | 'moderate' | 'growth';
+export type RiskProfile = 'conservative' | 'moderate' | 'growth'
 
 export interface InvestmentType {
-  id: string;
-  name: string;
-  description: string;
-  minAmount: number;
-  riskLevel: number; // 1-10
-  expectedReturn: string;
-  liquidity: string;
-  suitableProfiles: RiskProfile[];
+  id: string
+  name: string
+  description: string
+  minAmount: number
+  riskLevel: number // 1-10
+  expectedReturn: string
+  liquidity: string
+  suitableProfiles: RiskProfile[]
 }
 
 export const INVESTMENT_TYPES: InvestmentType[] = [
@@ -76,18 +76,18 @@ export const INVESTMENT_TYPES: InvestmentType[] = [
     liquidity: 'High (daily NAV)',
     suitableProfiles: ['growth'],
   },
-];
+]
 
 export interface RiskProfileInfo {
-  id: RiskProfile;
-  name: string;
-  description: string;
-  characteristics: string[];
+  id: RiskProfile
+  name: string
+  description: string
+  characteristics: string[]
   recommendedAllocation: {
-    cash: number;
-    bonds: number;
-    stocks: number;
-  };
+    cash: number
+    bonds: number
+    stocks: number
+  }
 }
 
 export const RISK_PROFILES: Record<RiskProfile, RiskProfileInfo> = {
@@ -139,4 +139,4 @@ export const RISK_PROFILES: Record<RiskProfile, RiskProfileInfo> = {
       stocks: 80,
     },
   },
-};
+}

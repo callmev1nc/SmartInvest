@@ -1,0 +1,59 @@
+# Free GitHub Actions CI for Node/TS. Default stack = Biome. Zero tokens, deterministic.
+# Copy into <repo>/.github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+# Cancel superseded runs on the same ref — saves free minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # Biome: format + lint + import order (one tool). Fails on any diff/violation.
+      - name: Biome
+        run: npx @biomejs/biome ci .
+
+      # Type-check (non-negotiable).
+      - name: Type check
+        run: npm run typecheck --if-present
+
+      # Knip: dead code / unused exports / unused deps. (Drop --no-exit-code to block PRs.)
+      - name: Knip
+        run: npx knip --no-exit-code
+
+      # Tests + coverage.
+      - name: Test
+        run: npm run test --if-present
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # gitleaks: secrets in git history + working tree.
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # osv-scanner: dependency CVEs (npm + pip). Free, no API key. (Drops npm audit / Snyk / Trivy.)
+      - name: OSV dependency scan
+        uses: google/osv-scanner-action/osv-scanner@v2
+        with:
+          scan-args: |-
+            --recursive
+            ./

@@ -2,18 +2,16 @@
  * Explore Screen - Investment discovery and educational content
  */
 
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { getInvestmentRecommendations } from '@/constants/investment';
-import { useUser } from '@/contexts/UserContext';
-import { Colors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/theme';
+import React from 'react'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { getInvestmentRecommendations } from '@/constants/investment'
+import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme'
+import { useUser } from '@/contexts/UserContext'
 
 export default function ExploreScreen() {
-  const { riskProfile } = useUser();
+  const { riskProfile } = useUser()
 
-  const recommendations = riskProfile
-    ? getInvestmentRecommendations(riskProfile)
-    : [];
+  const recommendations = riskProfile ? getInvestmentRecommendations(riskProfile) : []
 
   const educationalContent = [
     {
@@ -44,7 +42,7 @@ export default function ExploreScreen() {
       duration: '10 min read',
       icon: '⚖️',
     },
-  ];
+  ]
 
   return (
     <ScrollView style={styles.container}>
@@ -130,7 +128,7 @@ export default function ExploreScreen() {
         </Text>
       </View>
     </ScrollView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -275,4 +273,4 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     lineHeight: 20,
   },
-});
+})

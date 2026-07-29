@@ -2,15 +2,15 @@
  * Home Screen - Main dashboard screen
  */
 
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useUser } from '@/contexts/UserContext';
-import { Colors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/theme';
+import { useRouter } from 'expo-router'
+import React from 'react'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme'
+import { useUser } from '@/contexts/UserContext'
 
 export default function HomeScreen() {
-  const router = useRouter();
-  const { userName, riskProfile } = useUser();
+  const router = useRouter()
+  const { userName, riskProfile } = useUser()
 
   const features = [
     {
@@ -34,18 +34,14 @@ export default function HomeScreen() {
       icon: '💰',
       route: '/explore',
     },
-  ];
+  ]
 
   return (
     <ScrollView style={styles.container}>
       {/* Welcome Section */}
       <View style={styles.welcomeSection}>
-        <Text style={styles.greeting}>
-          {userName ? `Hi, ${userName}! 👋` : 'Welcome! 👋'}
-        </Text>
-        <Text style={styles.subtitle}>
-          Your personal AI investment advisor is ready to help
-        </Text>
+        <Text style={styles.greeting}>{userName ? `Hi, ${userName}! 👋` : 'Welcome! 👋'}</Text>
+        <Text style={styles.subtitle}>Your personal AI investment advisor is ready to help</Text>
       </View>
 
       {/* Risk Profile Banner */}
@@ -67,9 +63,7 @@ export default function HomeScreen() {
           <Text style={styles.bannerIcon}>📋</Text>
           <View style={styles.bannerContent}>
             <Text style={styles.bannerTitle}>Take the Quiz</Text>
-            <Text style={styles.bannerText}>
-              Discover your investor profile in 5 minutes
-            </Text>
+            <Text style={styles.bannerText}>Discover your investor profile in 5 minutes</Text>
           </View>
         </TouchableOpacity>
       )}
@@ -96,20 +90,20 @@ export default function HomeScreen() {
         <View style={styles.tipCard}>
           <Text style={styles.tipTitle}>Start Small, Think Big</Text>
           <Text style={styles.tipText}>
-            Even small investments can grow significantly over time. The key is consistency
-            and starting early.
+            Even small investments can grow significantly over time. The key is consistency and
+            starting early.
           </Text>
         </View>
         <View style={styles.tipCard}>
           <Text style={styles.tipTitle}>Diversify Your Portfolio</Text>
           <Text style={styles.tipText}>
-            Don't put all your eggs in one basket. Spread investments across different
-            asset classes to manage risk.
+            Don't put all your eggs in one basket. Spread investments across different asset classes
+            to manage risk.
           </Text>
         </View>
       </View>
     </ScrollView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -215,4 +209,4 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     lineHeight: 20,
   },
-});
+})

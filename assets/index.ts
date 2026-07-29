@@ -9,7 +9,7 @@ export const images = {
   adaptiveIcon: require('./images/adaptive-icon.png'),
   favicon: require('./images/favicon.png'),
   icon: require('./images/icon.png'),
-};
+}
 
 // Export individual images if needed
-export { images as default };
+export { images as default }

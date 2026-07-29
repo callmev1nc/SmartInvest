@@ -2,17 +2,17 @@
  * Investment types and risk profile configurations
  */
 
-export type RiskProfile = 'conservative' | 'moderate' | 'growth';
+export type RiskProfile = 'conservative' | 'moderate' | 'growth'
 
 export interface InvestmentType {
-  id: string;
-  name: string;
-  description: string;
-  minAmount: number;
-  riskLevel: number; // 1-10
-  expectedReturn: string;
-  liquidity: string;
-  suitableProfiles: RiskProfile[];
+  id: string
+  name: string
+  description: string
+  minAmount: number
+  riskLevel: number // 1-10
+  expectedReturn: string
+  liquidity: string
+  suitableProfiles: RiskProfile[]
 }
 
 export const INVESTMENT_TYPES: InvestmentType[] = [
@@ -86,18 +86,18 @@ export const INVESTMENT_TYPES: InvestmentType[] = [
     liquidity: 'Medium (depends on fund)',
     suitable_profiles: ['growth'],
   },
-];
+]
 
 export interface RiskProfileInfo {
-  id: RiskProfile;
-  name: string;
-  description: string;
-  characteristics: string[];
+  id: RiskProfile
+  name: string
+  description: string
+  characteristics: string[]
   recommendedAllocation: {
-    cash: number;
-    bonds: number;
-    stocks: number;
-  };
+    cash: number
+    bonds: number
+    stocks: number
+  }
 }
 
 export const RISK_PROFILES: Record<RiskProfile, RiskProfileInfo> = {
@@ -149,27 +149,28 @@ export const RISK_PROFILES: Record<RiskProfile, RiskProfileInfo> = {
       stocks: 80,
     },
   },
-};
+}
 
 /**
  * Calculate match score for investment type based on risk profile
  */
 export function calculateMatchScore(
   investment: InvestmentType,
-  userRiskProfile: RiskProfile
+  userRiskProfile: RiskProfile,
 ): number {
   if (!investment.suitable_profiles.includes(userRiskProfile)) {
-    return 0;
+    return 0
   }
 
-  const profile = RISK_PROFILES[userRiskProfile];
-  const riskTolerance = userRiskProfile === 'conservative' ? 3 : userRiskProfile === 'moderate' ? 6 : 9;
+  const profile = RISK_PROFILES[userRiskProfile]
+  const riskTolerance =
+    userRiskProfile === 'conservative' ? 3 : userRiskProfile === 'moderate' ? 6 : 9
 
   // Calculate score based on risk level alignment
-  const riskDiff = Math.abs(investment.riskLevel - riskTolerance);
-  const riskScore = Math.max(0, 100 - riskDiff * 15);
+  const riskDiff = Math.abs(investment.riskLevel - riskTolerance)
+  const riskScore = Math.max(0, 100 - riskDiff * 15)
 
-  return Math.round(riskScore);
+  return Math.round(riskScore)
 }
 
 /**
@@ -177,14 +178,13 @@ export function calculateMatchScore(
  */
 export function getInvestmentRecommendations(
   riskProfile: RiskProfile,
-  budget?: number
+  budget?: number,
 ): Array<{ investment: InvestmentType; matchScore: number }> {
-  return INVESTMENT_TYPES
-    .filter((inv) => !budget || inv.minAmount <= budget)
+  return INVESTMENT_TYPES.filter((inv) => !budget || inv.minAmount <= budget)
     .filter((inv) => inv.suitable_profiles.includes(riskProfile))
     .map((investment) => ({
       investment,
       matchScore: calculateMatchScore(investment, riskProfile),
     }))
-    .sort((a, b) => b.matchScore - a.matchScore);
+    .sort((a, b) => b.matchScore - a.matchScore)
 }

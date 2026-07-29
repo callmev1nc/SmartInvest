@@ -2,54 +2,54 @@
  * ChatScreen - Main chat interface for interacting with Uma
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
-import { useUser } from '@/contexts/UserContext';
-import { chatWithUmaStream } from '@/services/uma';
-import { getWelcomeMessage, UMA_SUGGESTED_QUESTIONS } from '@/constants/uma';
-import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
-import { saveChatHistory, getChatHistory } from '@/utils/storage';
-import { MessageBubble, Message } from './MessageBubble';
-import { SuggestedQuestions } from './SuggestedQuestions';
-import { NameInputModal } from './NameInputModal';
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme'
+import { getWelcomeMessage, UMA_SUGGESTED_QUESTIONS } from '@/constants/uma'
+import { useUser } from '@/contexts/UserContext'
+import { chatWithUmaStream } from '@/services/uma'
+import { getChatHistory, saveChatHistory } from '@/utils/storage'
+import { type Message, MessageBubble } from './MessageBubble'
+import { NameInputModal } from './NameInputModal'
+import { SuggestedQuestions } from './SuggestedQuestions'
 
 export function ChatScreen() {
-  const { userName, riskProfile, isOnboardingComplete } = useUser();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputText, setInputText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [showNameModal, setShowNameModal] = useState(false);
-  const [hasWelcomed, setHasWelcomed] = useState(false);
+  const { userName, riskProfile, isOnboardingComplete } = useUser()
+  const [messages, setMessages] = useState<Message[]>([])
+  const [inputText, setInputText] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const [showNameModal, setShowNameModal] = useState(false)
+  const [hasWelcomed, setHasWelcomed] = useState(false)
 
-  const flatListRef = useRef<FlatList>(null);
+  const flatListRef = useRef<FlatList>(null)
 
   // Show name modal if onboarding not complete
   useEffect(() => {
     if (!isOnboardingComplete && !showNameModal) {
-      setShowNameModal(true);
+      setShowNameModal(true)
     }
-  }, [isOnboardingComplete]);
+  }, [isOnboardingComplete])
 
   // Load chat history and welcome user
   useEffect(() => {
-    if (!userName || hasWelcomed) return;
+    if (!userName || hasWelcomed) return
 
     const initializeChat = async () => {
       // Load saved chat history
-      const savedHistory = await getChatHistory();
+      const savedHistory = await getChatHistory()
       if (savedHistory.length > 0) {
-        setMessages(savedHistory);
+        setMessages(savedHistory)
       } else {
         // Send welcome message from Uma
         const welcomeMsg: Message = {
@@ -57,117 +57,116 @@ export function ChatScreen() {
           role: 'assistant',
           content: getWelcomeMessage(userName),
           timestamp: new Date(),
-        };
-        setMessages([welcomeMsg]);
-        setHasWelcomed(true);
+        }
+        setMessages([welcomeMsg])
+        setHasWelcomed(true)
       }
-    };
+    }
 
-    initializeChat();
-  }, [userName, hasWelcomed]);
+    initializeChat()
+  }, [userName, hasWelcomed])
 
   // Save chat history when messages change
   useEffect(() => {
     if (messages.length > 0) {
-      saveChatHistory(messages);
+      saveChatHistory(messages)
     }
-  }, [messages]);
+  }, [messages])
 
   // Auto-scroll to bottom when new message arrives
   useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
       setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+        flatListRef.current?.scrollToEnd({ animated: true })
+      }, 100)
     }
-  }, [messages]);
+  }, [messages])
 
-  const sendMessage = useCallback(async (text?: string) => {
-    const messageToSend = text || inputText;
+  const sendMessage = useCallback(
+    async (text?: string) => {
+      const messageToSend = text || inputText
 
-    if (!messageToSend.trim() || !userName) return;
+      if (!messageToSend.trim() || !userName) return
 
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: messageToSend.trim(),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputText('');
-    setIsTyping(true);
-
-    try {
-      // Stream Uma's response
-      const umaMessageId = (Date.now() + 1).toString();
-      let umaResponse = '';
-
-      // Create placeholder for Uma's response
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: umaMessageId,
-          role: 'assistant',
-          content: '',
-          timestamp: new Date(),
-        },
-      ]);
-
-      // Stream the response
-      for await (const chunk of chatWithUmaStream(
-        messageToSend,
-        userName,
-        messages,
-        riskProfile
-      )) {
-        umaResponse += chunk;
-
-        // Update the message in real-time
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === umaMessageId
-              ? { ...msg, content: umaResponse }
-              : msg
-          )
-        );
+      // Add user message
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: messageToSend.trim(),
+        timestamp: new Date(),
       }
 
-      setIsTyping(false);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setIsTyping(false);
+      setMessages((prev) => [...prev, userMessage])
+      setInputText('')
+      setIsTyping(true)
 
-      // Add error message from Uma
-      const errorMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: `Hi ${userName}! I'm having trouble connecting right now. Please check your internet connection and try again.`,
-        timestamp: new Date(),
-      };
+      try {
+        // Stream Uma's response
+        const umaMessageId = (Date.now() + 1).toString()
+        let umaResponse = ''
 
-      setMessages((prev) => [...prev, errorMsg]);
+        // Create placeholder for Uma's response
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: umaMessageId,
+            role: 'assistant',
+            content: '',
+            timestamp: new Date(),
+          },
+        ])
 
-      Alert.alert(
-        'Connection Error',
-        'Could not connect to Uma. Please check your internet connection.',
-        [{ text: 'OK' }]
-      );
-    }
-  }, [inputText, userName, riskProfile, messages]);
+        // Stream the response
+        for await (const chunk of chatWithUmaStream(
+          messageToSend,
+          userName,
+          messages,
+          riskProfile,
+        )) {
+          umaResponse += chunk
+
+          // Update the message in real-time
+          setMessages((prev) =>
+            prev.map((msg) => (msg.id === umaMessageId ? { ...msg, content: umaResponse } : msg)),
+          )
+        }
+
+        setIsTyping(false)
+      } catch (error) {
+        console.error('Error sending message:', error)
+        setIsTyping(false)
+
+        // Add error message from Uma
+        const errorMsg: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `Hi ${userName}! I'm having trouble connecting right now. Please check your internet connection and try again.`,
+          timestamp: new Date(),
+        }
+
+        setMessages((prev) => [...prev, errorMsg])
+
+        Alert.alert(
+          'Connection Error',
+          'Could not connect to Uma. Please check your internet connection.',
+          [{ text: 'OK' }],
+        )
+      }
+    },
+    [inputText, userName, riskProfile, messages],
+  )
 
   const handleSuggestedQuestion = (question: string) => {
-    setInputText(question);
-    sendMessage(question);
-  };
+    setInputText(question)
+    sendMessage(question)
+  }
 
   const renderMessage = ({ item }: { item: Message }) => (
     <MessageBubble message={item} userName={userName || undefined} />
-  );
+  )
 
   if (!userName) {
-    return <NameInputModal visible={showNameModal} onClose={() => setShowNameModal(false)} />;
+    return <NameInputModal visible={showNameModal} onClose={() => setShowNameModal(false)} />
   }
 
   return (
@@ -213,9 +212,7 @@ export function ChatScreen() {
       )}
 
       {/* Suggested questions */}
-      {messages.length < 3 && (
-        <SuggestedQuestions onSelectQuestion={handleSuggestedQuestion} />
-      )}
+      {messages.length < 3 && <SuggestedQuestions onSelectQuestion={handleSuggestedQuestion} />}
 
       {/* Input area */}
       <View style={styles.inputContainer}>
@@ -239,12 +236,9 @@ export function ChatScreen() {
       </View>
 
       {/* Name input modal */}
-      <NameInputModal
-        visible={showNameModal}
-        onClose={() => setShowNameModal(false)}
-      />
+      <NameInputModal visible={showNameModal} onClose={() => setShowNameModal(false)} />
     </KeyboardAvoidingView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -351,6 +345,6 @@ const styles = StyleSheet.create({
     color: Colors.background,
     fontWeight: '600',
   },
-});
+})
 
-export default ChatScreen;
+export default ChatScreen

@@ -2,19 +2,13 @@
  * SuggestedQuestions - Quick questions users can ask Uma
  */
 
-import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import { UMA_SUGGESTED_QUESTIONS } from '@/constants/uma';
-import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
+import React from 'react'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme'
+import { UMA_SUGGESTED_QUESTIONS } from '@/constants/uma'
 
 interface SuggestedQuestionsProps {
-  onSelectQuestion: (question: string) => void;
+  onSelectQuestion: (question: string) => void
 }
 
 export function SuggestedQuestions({ onSelectQuestion }: SuggestedQuestionsProps) {
@@ -37,7 +31,7 @@ export function SuggestedQuestions({ onSelectQuestion }: SuggestedQuestionsProps
         ))}
       </ScrollView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -70,6 +64,6 @@ const styles = StyleSheet.create({
     ...Typography.bodySmall,
     color: Colors.primary,
   },
-});
+})
 
-export default SuggestedQuestions;
+export default SuggestedQuestions

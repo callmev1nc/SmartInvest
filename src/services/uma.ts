@@ -2,47 +2,47 @@
  * Uma AI Service - Handles all interactions with Google Gemini AI
  */
 
-import { GoogleGenAI } from '@google/genai';
-import { UMA_SYSTEM_PROMPT, getGreeting } from '@/constants/uma';
-import type { RiskProfile } from '@/constants/investment';
-import { googleAIRateLimiter } from '@/services/rateLimiter';
-import { API_CONFIG, ERROR_MESSAGES } from '@/constants/config';
+import { GoogleGenAI } from '@google/genai'
+import { API_CONFIG, ERROR_MESSAGES } from '@/constants/config'
+import type { RiskProfile } from '@/constants/investment'
+import { getGreeting, UMA_SYSTEM_PROMPT } from '@/constants/uma'
+import { googleAIRateLimiter } from '@/services/rateLimiter'
 
 export interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: Date | string;
+  id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: Date | string
 }
 
 export interface UmaResponse {
-  message: string;
+  message: string
 }
 
-const MODEL = API_CONFIG.MODEL;
+const MODEL = API_CONFIG.MODEL
 
 /**
  * AI Client Cache - Reuse the same client instance
  */
-let aiClient: GoogleGenAI | null = null;
+let aiClient: GoogleGenAI | null = null
 
 /**
  * Initialize the Google AI client (cached for performance)
  */
 function getAIClient(): GoogleGenAI {
   if (!aiClient) {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
 
     if (!apiKey) {
-      throw new Error(ERROR_MESSAGES.API_KEY_MISSING);
+      throw new Error(ERROR_MESSAGES.API_KEY_MISSING)
     }
 
     aiClient = new GoogleGenAI({
       apiKey,
-    });
+    })
   }
 
-  return aiClient;
+  return aiClient
 }
 
 /**
@@ -53,7 +53,7 @@ function getTools() {
     {
       googleSearch: {},
     },
-  ];
+  ]
 }
 
 /**
@@ -62,7 +62,7 @@ function getTools() {
 function getConfig() {
   return {
     tools: getTools(),
-  };
+  }
 }
 
 /**
@@ -72,9 +72,9 @@ function createPersonalizedPrompt(
   userMessage: string,
   userName: string,
   riskProfile?: RiskProfile | null,
-  conversationHistory: ChatMessage[] = []
+  conversationHistory: ChatMessage[] = [],
 ): string {
-  const profile = riskProfile ? riskProfile.toUpperCase() : 'Not assessed yet';
+  const profile = riskProfile ? riskProfile.toUpperCase() : 'Not assessed yet'
 
   let prompt = `${UMA_SYSTEM_PROMPT}
 
@@ -95,18 +95,18 @@ IMPORTANT INSTRUCTIONS:
 7. Always include risk level (1-10 scale)
 8. Keep explanations brief but complete
 9. Include standard disclaimer at the end
-10. NEVER use bold formatting, markdown headers, or special characters`;
+10. NEVER use bold formatting, markdown headers, or special characters`
 
   // Add conversation context
   if (conversationHistory.length > 0) {
-    const recentHistory = conversationHistory.slice(-6);
+    const recentHistory = conversationHistory.slice(-6)
     const history = recentHistory
-      .map(msg => `${msg.role === 'assistant' ? 'Uma' : userName}: ${msg.content}`)
-      .join('\n');
-    prompt += `\n\n## Recent Conversation\n${history}`;
+      .map((msg) => `${msg.role === 'assistant' ? 'Uma' : userName}: ${msg.content}`)
+      .join('\n')
+    prompt += `\n\n## Recent Conversation\n${history}`
   }
 
-  return prompt;
+  return prompt
 }
 
 /**
@@ -116,17 +116,12 @@ export async function chatWithUma(
   userMessage: string,
   userName: string,
   conversationHistory: ChatMessage[] = [],
-  riskProfile?: RiskProfile | null
+  riskProfile?: RiskProfile | null,
 ): Promise<UmaResponse> {
   try {
-    const ai = getAIClient();
-    const config = getConfig();
-    const prompt = createPersonalizedPrompt(
-      userMessage,
-      userName,
-      riskProfile,
-      conversationHistory
-    );
+    const ai = getAIClient()
+    const config = getConfig()
+    const prompt = createPersonalizedPrompt(userMessage, userName, riskProfile, conversationHistory)
 
     const contents = [
       {
@@ -137,7 +132,7 @@ export async function chatWithUma(
           },
         ],
       },
-    ];
+    ]
 
     // Use rate limiter to stay under 24 RPM
     const response = await googleAIRateLimiter.execute(async () => {
@@ -145,24 +140,24 @@ export async function chatWithUma(
         model: MODEL,
         config,
         contents,
-      });
-    });
+      })
+    })
 
-    let fullResponse = '';
+    let fullResponse = ''
     for await (const chunk of response) {
-      fullResponse += chunk.text;
+      fullResponse += chunk.text
     }
 
     return {
       message: fullResponse.trim(),
-    };
+    }
   } catch (error) {
-    console.error('Error chatting with Uma:', error);
+    console.error('Error chatting with Uma:', error)
 
     // Return a fallback error response
     return {
       message: `${getGreeting(userName)} I'm having trouble connecting right now. Please check your internet connection and try again. If the problem persists, please contact support.`,
-    };
+    }
   }
 }
 
@@ -173,17 +168,12 @@ export async function* chatWithUmaStream(
   userMessage: string,
   userName: string,
   conversationHistory: ChatMessage[] = [],
-  riskProfile?: RiskProfile | null
+  riskProfile?: RiskProfile | null,
 ): AsyncGenerator<string, void, unknown> {
   try {
-    const ai = getAIClient();
-    const config = getConfig();
-    const prompt = createPersonalizedPrompt(
-      userMessage,
-      userName,
-      riskProfile,
-      conversationHistory
-    );
+    const ai = getAIClient()
+    const config = getConfig()
+    const prompt = createPersonalizedPrompt(userMessage, userName, riskProfile, conversationHistory)
 
     const contents = [
       {
@@ -194,7 +184,7 @@ export async function* chatWithUmaStream(
           },
         ],
       },
-    ];
+    ]
 
     // Use rate limiter to stay under 24 RPM
     const response = await googleAIRateLimiter.execute(async () => {
@@ -202,18 +192,18 @@ export async function* chatWithUmaStream(
         model: MODEL,
         config,
         contents,
-      });
-    });
+      })
+    })
 
     // Yield chunks as they arrive
     for await (const chunk of response) {
       if (chunk.text) {
-        yield chunk.text;
+        yield chunk.text
       }
     }
   } catch (error) {
-    console.error('Error streaming chat with Uma:', error);
-    yield `${getGreeting(userName)} I'm having trouble connecting right now. Please try again.`;
+    console.error('Error streaming chat with Uma:', error)
+    yield `${getGreeting(userName)} I'm having trouble connecting right now. Please try again.`
   }
 }
 
@@ -222,14 +212,14 @@ export async function* chatWithUmaStream(
  */
 export async function getUmaWelcomeMessage(userName: string): Promise<string> {
   try {
-    const ai = getAIClient();
-    const config = getConfig();
+    const ai = getAIClient()
+    const config = getConfig()
 
     const prompt = `User's Name: ${userName}
 Risk Profile: Not assessed yet
 First-time user
 
-Please provide a warm, welcoming message (2-3 sentences) introducing yourself as Uma and asking how you can help them with their investment journey. Address ${userName} by name.`;
+Please provide a warm, welcoming message (2-3 sentences) introducing yourself as Uma and asking how you can help them with their investment journey. Address ${userName} by name.`
 
     const contents = [
       {
@@ -240,7 +230,7 @@ Please provide a warm, welcoming message (2-3 sentences) introducing yourself as
           },
         ],
       },
-    ];
+    ]
 
     // Use rate limiter to stay under 24 RPM
     const result = await googleAIRateLimiter.execute(async () => {
@@ -248,18 +238,18 @@ Please provide a warm, welcoming message (2-3 sentences) introducing yourself as
         model: MODEL,
         config,
         contents,
-      });
-    });
+      })
+    })
 
-    let fullResponse = '';
+    let fullResponse = ''
     for await (const chunk of result) {
-      fullResponse += chunk.text;
+      fullResponse += chunk.text
     }
 
-    return fullResponse.trim();
+    return fullResponse.trim()
   } catch (error) {
-    console.error('Error generating welcome message:', error);
-    return `Hi ${userName}! I'm Uma, your personal AI investment advisor. I'm here to help you make smart investment decisions. What would you like to know?`;
+    console.error('Error generating welcome message:', error)
+    return `Hi ${userName}! I'm Uma, your personal AI investment advisor. I'm here to help you make smart investment decisions. What would you like to know?`
   }
 }
 
@@ -271,8 +261,8 @@ export function validateUmaConfiguration(): { isValid: boolean; error?: string }
     return {
       isValid: false,
       error: ERROR_MESSAGES.API_KEY_MISSING,
-    };
+    }
   }
 
-  return { isValid: true };
+  return { isValid: true }
 }

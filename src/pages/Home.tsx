@@ -1,21 +1,21 @@
-import { Link } from 'react-router-dom';
-import { useUser } from '@/contexts/UserContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import {
-  Bot,
+  ArrowRight,
   BarChart3,
-  TrendingUp,
-  Target,
+  Bot,
   ClipboardList,
   Lightbulb,
-  ArrowRight,
-  Sparkles
-} from 'lucide-react';
-import './Home.css';
+  Sparkles,
+  Target,
+  TrendingUp,
+} from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { useUser } from '@/contexts/UserContext'
+import './Home.css'
 
 export default function Home() {
-  const { userName, riskProfile } = useUser();
-  const { t } = useLanguage();
+  const { userName, riskProfile } = useUser()
+  const { t } = useLanguage()
 
   const features = [
     {
@@ -39,7 +39,7 @@ export default function Home() {
       icon: TrendingUp,
       link: '/explore',
     },
-  ];
+  ]
 
   return (
     <div className="home">
@@ -50,9 +50,7 @@ export default function Home() {
           <h1 className="hero-title">
             {userName ? t('welcomeBack', { name: userName }) : t('welcomeToApp')}
           </h1>
-          <p className="hero-subtitle">
-            {t('heroSubtitle')}
-          </p>
+          <p className="hero-subtitle">{t('heroSubtitle')}</p>
         </div>
       </section>
 
@@ -72,9 +70,7 @@ export default function Home() {
           <ClipboardList className="banner-icon" size={32} strokeWidth={2} />
           <div className="banner-content">
             <h3 className="banner-title">{t('takeQuiz')}</h3>
-            <p className="banner-text">
-              {t('takeQuizDesc')}
-            </p>
+            <p className="banner-text">{t('takeQuizDesc')}</p>
           </div>
           <ArrowRight className="banner-arrow" size={20} strokeWidth={2} />
         </Link>
@@ -103,17 +99,13 @@ export default function Home() {
         </h2>
         <div className="tip-card">
           <h3 className="tip-title">{t('tip1Title')}</h3>
-          <p className="tip-text">
-            {t('tip1Text')}
-          </p>
+          <p className="tip-text">{t('tip1Text')}</p>
         </div>
         <div className="tip-card">
           <h3 className="tip-title">{t('tip2Title')}</h3>
-          <p className="tip-text">
-            {t('tip2Text')}
-          </p>
+          <p className="tip-text">{t('tip2Text')}</p>
         </div>
       </section>
     </div>
-  );
+  )
 }

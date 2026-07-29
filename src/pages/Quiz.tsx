@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { useUser } from '@/contexts/UserContext';
-import { RISK_PROFILES, type RiskProfile } from '@/constants/investment';
-import './Quiz.css';
+import { useState } from 'react'
+import { RISK_PROFILES, type RiskProfile } from '@/constants/investment'
+import { useUser } from '@/contexts/UserContext'
+import './Quiz.css'
 
 export default function Quiz() {
-  const { riskProfile, setRiskProfile } = useUser();
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [showResults, setShowResults] = useState(!!riskProfile);
+  const { riskProfile, setRiskProfile } = useUser()
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [answers, setAnswers] = useState<Record<number, string>>({})
+  const [showResults, setShowResults] = useState(!!riskProfile)
 
   const questions = [
     {
@@ -25,12 +25,7 @@ export default function Quiz() {
       id: 2,
       category: 'Goals',
       question: 'When do you plan to withdraw this money?',
-      options: [
-        'Within 1 year',
-        '1-3 years',
-        '3-5 years',
-        'More than 5 years',
-      ],
+      options: ['Within 1 year', '1-3 years', '3-5 years', 'More than 5 years'],
     },
     {
       id: 3,
@@ -58,34 +53,19 @@ export default function Quiz() {
       id: 5,
       category: 'Risk Tolerance',
       question: 'What is the maximum loss you could tolerate in a year?',
-      options: [
-        '0% - I cannot afford any losses',
-        '1-5% loss',
-        '5-10% loss',
-        '10% or more loss',
-      ],
+      options: ['0% - I cannot afford any losses', '1-5% loss', '5-10% loss', '10% or more loss'],
     },
     {
       id: 6,
       category: 'Time Horizon',
       question: 'What is your investment timeframe?',
-      options: [
-        'Less than 2 years',
-        '2-5 years',
-        '5-10 years',
-        'More than 10 years',
-      ],
+      options: ['Less than 2 years', '2-5 years', '5-10 years', 'More than 10 years'],
     },
     {
       id: 7,
       category: 'Time Horizon',
       question: 'How old are you?',
-      options: [
-        'Under 30',
-        '30-45',
-        '45-60',
-        'Over 60',
-      ],
+      options: ['Under 30', '30-45', '45-60', 'Over 60'],
     },
     {
       id: 8,
@@ -113,23 +93,13 @@ export default function Quiz() {
       id: 10,
       category: 'Financial Situation',
       question: 'What percentage of your income can you invest monthly?',
-      options: [
-        'Less than 5%',
-        '5-10%',
-        '10-20%',
-        'More than 20%',
-      ],
+      options: ['Less than 5%', '5-10%', '10-20%', 'More than 20%'],
     },
     {
       id: 11,
       category: 'Financial Situation',
       question: 'Do you have an emergency fund (3-6 months of expenses)?',
-      options: [
-        'No',
-        'Less than 3 months',
-        '3-6 months',
-        'More than 6 months',
-      ],
+      options: ['No', 'Less than 3 months', '3-6 months', 'More than 6 months'],
     },
     {
       id: 12,
@@ -138,7 +108,7 @@ export default function Quiz() {
       options: [
         'Very uncomfortable, I lose sleep',
         'Somewhat uncomfortable',
-        'Neutral, it doesn\'t bother me',
+        "Neutral, it doesn't bother me",
         'Comfortable, I see opportunities',
       ],
     },
@@ -146,12 +116,7 @@ export default function Quiz() {
       id: 13,
       category: 'Investment Knowledge',
       question: 'How closely do you follow financial news?',
-      options: [
-        'Never',
-        'Occasionally',
-        'Weekly',
-        'Daily',
-      ],
+      options: ['Never', 'Occasionally', 'Weekly', 'Daily'],
     },
     {
       id: 14,
@@ -208,61 +173,61 @@ export default function Quiz() {
         'Build long-term wealth',
       ],
     },
-  ];
+  ]
 
   const handleAnswer = (answer: string) => {
-    setAnswers({ ...answers, [currentQuestion]: answer });
+    setAnswers({ ...answers, [currentQuestion]: answer })
 
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(currentQuestion + 1)
     } else {
-      calculateAndSaveProfile();
+      calculateAndSaveProfile()
     }
-  };
+  }
 
   const calculateAndSaveProfile = () => {
     // Calculate score based on answers
     // First two options = conservative (0-1 points)
     // Middle options = moderate (2 points)
     // Last option = growth (3 points)
-    let totalScore = 0;
+    let totalScore = 0
 
     Object.values(answers).forEach((answer, answerIndex) => {
-      const question = questions[answerIndex];
-      const optionIndex = question.options.indexOf(answer);
-      totalScore += optionIndex;
-    });
+      const question = questions[answerIndex]
+      const optionIndex = question.options.indexOf(answer)
+      totalScore += optionIndex
+    })
 
     // Score range: 0 to (18 questions * 3) = 0-54
     // Conservative: 0-18
     // Moderate: 19-36
     // Growth: 37-54
-    let profile: RiskProfile;
+    let profile: RiskProfile
     if (totalScore <= 18) {
-      profile = 'conservative';
+      profile = 'conservative'
     } else if (totalScore <= 36) {
-      profile = 'moderate';
+      profile = 'moderate'
     } else {
-      profile = 'growth';
+      profile = 'growth'
     }
 
-    setRiskProfile(profile);
-    setShowResults(true);
-  };
+    setRiskProfile(profile)
+    setShowResults(true)
+  }
 
   const resetQuiz = () => {
-    setCurrentQuestion(0);
-    setAnswers({});
-    setShowResults(false);
+    setCurrentQuestion(0)
+    setAnswers({})
+    setShowResults(false)
     // Don't clear riskProfile from context, just hide results
-  };
+  }
 
   const startOver = () => {
-    resetQuiz();
-  };
+    resetQuiz()
+  }
 
   if (showResults && riskProfile) {
-    const profile = RISK_PROFILES[riskProfile];
+    const profile = RISK_PROFILES[riskProfile]
 
     return (
       <div className="quiz">
@@ -322,11 +287,11 @@ export default function Quiz() {
           </button>
         </div>
       </div>
-    );
+    )
   }
 
-  const progress = ((currentQuestion + 1) / questions.length) * 100;
-  const currentQ = questions[currentQuestion];
+  const progress = ((currentQuestion + 1) / questions.length) * 100
+  const currentQ = questions[currentQuestion]
 
   return (
     <div className="quiz">
@@ -353,11 +318,7 @@ export default function Quiz() {
 
           <div className="options">
             {currentQ.options.map((option, index) => (
-              <button
-                key={index}
-                className="option"
-                onClick={() => handleAnswer(option)}
-              >
+              <button key={index} className="option" onClick={() => handleAnswer(option)}>
                 {option}
               </button>
             ))}
@@ -369,5 +330,5 @@ export default function Quiz() {
         </button>
       </div>
     </div>
-  );
+  )
 }

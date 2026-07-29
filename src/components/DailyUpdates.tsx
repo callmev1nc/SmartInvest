@@ -3,68 +3,68 @@
  * Displays AI-powered daily market analysis and personalized recommendations
  */
 
-import { useState, useEffect } from 'react';
-import { getDailyUpdates, type DailyUpdate, type MarketUpdate } from '@/services/dailyUpdates';
-import { translateText } from '@/services/translation';
-import { useUser } from '@/contexts/UserContext';
-import { useLanguage } from '@/contexts/LanguageContext';
-import './DailyUpdates.css';
+import { useEffect, useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { useUser } from '@/contexts/UserContext'
+import { type DailyUpdate, getDailyUpdates, type MarketUpdate } from '@/services/dailyUpdates'
+import { translateText } from '@/services/translation'
+import './DailyUpdates.css'
 
 export function DailyUpdates() {
-  const { riskProfile } = useUser();
-  const { language } = useLanguage();
-  const [updates, setUpdates] = useState<DailyUpdate | null>(null);
-  const [translatedUpdates, setTranslatedUpdates] = useState<DailyUpdate | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [translating, setTranslating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const { riskProfile } = useUser()
+  const { language } = useLanguage()
+  const [updates, setUpdates] = useState<DailyUpdate | null>(null)
+  const [translatedUpdates, setTranslatedUpdates] = useState<DailyUpdate | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [translating, setTranslating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
+  const [currentTime, setCurrentTime] = useState(new Date())
 
   // Update time every second
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
-    loadUpdates(false);
-  }, [riskProfile]);
+    loadUpdates(false)
+  }, [riskProfile])
 
   // Translate updates when language or updates change
   useEffect(() => {
     if (updates && language !== 'en') {
-      translateUpdates(updates, language);
+      translateUpdates(updates, language)
     } else {
-      setTranslatedUpdates(updates);
+      setTranslatedUpdates(updates)
     }
-  }, [updates, language]);
+  }, [updates, language])
 
   const loadUpdates = async (forceRefresh = false) => {
     try {
-      setLoading(true);
-      setError(null);
-      if (forceRefresh) setRefreshing(true);
+      setLoading(true)
+      setError(null)
+      if (forceRefresh) setRefreshing(true)
 
-      const data = await getDailyUpdates(riskProfile, forceRefresh);
-      setUpdates(data);
+      const data = await getDailyUpdates(riskProfile, forceRefresh)
+      setUpdates(data)
     } catch (err) {
-      setError('Failed to load daily updates');
-      console.error(err);
+      setError('Failed to load daily updates')
+      console.error(err)
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      setLoading(false)
+      setRefreshing(false)
     }
-  };
+  }
 
   const translateUpdates = async (data: DailyUpdate, targetLanguage: string) => {
     try {
-      setTranslating(true);
+      setTranslating(true)
 
       // Translate summary
-      const translatedSummary = await translateText(data.summary, targetLanguage as any);
+      const translatedSummary = await translateText(data.summary, targetLanguage as any)
 
       // Translate market updates
       const translatedMarkets = {
@@ -72,8 +72,11 @@ export function DailyUpdates() {
         crypto: await translateMarketUpdate(data.markets.crypto, targetLanguage),
         realEstate: await translateMarketUpdate(data.markets.realEstate, targetLanguage),
         international: await translateMarketUpdate(data.markets.international, targetLanguage),
-        alternativeInvestments: await translateMarketUpdate(data.markets.alternativeInvestments, targetLanguage),
-      };
+        alternativeInvestments: await translateMarketUpdate(
+          data.markets.alternativeInvestments,
+          targetLanguage,
+        ),
+      }
 
       // Translate opportunities
       const translatedOpportunities = await Promise.all(
@@ -85,43 +88,46 @@ export function DailyUpdates() {
           expectedReturn: opp.expectedReturn, // Keep return format
           timeHorizon: await translateText(opp.timeHorizon, targetLanguage as any),
           reason: await translateText(opp.reason, targetLanguage as any),
-        }))
-      );
+        })),
+      )
 
       setTranslatedUpdates({
         ...data,
         summary: translatedSummary,
         markets: translatedMarkets,
         opportunities: translatedOpportunities,
-      });
+      })
     } catch (error) {
-      console.error('Translation error:', error);
+      console.error('Translation error:', error)
       // Fall back to original data if translation fails
-      setTranslatedUpdates(data);
+      setTranslatedUpdates(data)
     } finally {
-      setTranslating(false);
+      setTranslating(false)
     }
-  };
+  }
 
-  const translateMarketUpdate = async (market: MarketUpdate, targetLanguage: string): Promise<MarketUpdate> => {
-    const translatedSummary = await translateText(market.summary, targetLanguage as any);
+  const translateMarketUpdate = async (
+    market: MarketUpdate,
+    targetLanguage: string,
+  ): Promise<MarketUpdate> => {
+    const translatedSummary = await translateText(market.summary, targetLanguage as any)
     const translatedKeyPoints = await Promise.all(
-      market.keyPoints.map(point => translateText(point, targetLanguage as any))
-    );
+      market.keyPoints.map((point) => translateText(point, targetLanguage as any)),
+    )
 
     return {
       ...market,
       summary: translatedSummary,
       keyPoints: translatedKeyPoints,
-    };
-  };
+    }
+  }
 
   const handleRefresh = () => {
-    loadUpdates(true);
-  };
+    loadUpdates(true)
+  }
 
   // Use translated updates if available, otherwise use original
-  const displayUpdates = translatedUpdates || updates;
+  const displayUpdates = translatedUpdates || updates
 
   if (loading) {
     return (
@@ -134,7 +140,7 @@ export function DailyUpdates() {
           <p>Analyzing markets with AI...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error || !displayUpdates) {
@@ -150,7 +156,7 @@ export function DailyUpdates() {
           </button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -201,14 +207,19 @@ export function DailyUpdates() {
         <MarketCard market={displayUpdates.markets.crypto} title="Crypto" icon="₿" />
         <MarketCard market={displayUpdates.markets.realEstate} title="Real Estate" icon="🏠" />
         <MarketCard market={displayUpdates.markets.international} title="International" icon="🌍" />
-        <MarketCard market={displayUpdates.markets.alternativeInvestments} title="Alternatives" icon="🎨" />
+        <MarketCard
+          market={displayUpdates.markets.alternativeInvestments}
+          title="Alternatives"
+          icon="🎨"
+        />
       </div>
 
       {/* Opportunities */}
       {displayUpdates.opportunities.length > 0 && (
         <div className="opportunities-section">
           <h3 className="opportunities-title">
-            🎯 Top Opportunities for {riskProfile ? riskProfile.toUpperCase() : 'MODERATE'} Investors
+            🎯 Top Opportunities for {riskProfile ? riskProfile.toUpperCase() : 'MODERATE'}{' '}
+            Investors
           </h3>
           <div className="opportunities-grid">
             {displayUpdates.opportunities.map((opp, index) => (
@@ -218,25 +229,32 @@ export function DailyUpdates() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 interface MarketCardProps {
-  market: MarketUpdate;
-  title: string;
-  icon: string;
+  market: MarketUpdate
+  title: string
+  icon: string
 }
 
 function MarketCard({ market, title, icon }: MarketCardProps) {
-  const trendColor = market.trend === 'up' ? '#10B981' : market.trend === 'down' ? '#EF4444' : '#6B7280';
-  const trendArrow = market.trend === 'up' ? '↑' : market.trend === 'down' ? '↓' : '→';
+  const trendColor =
+    market.trend === 'up' ? '#10B981' : market.trend === 'down' ? '#EF4444' : '#6B7280'
+  const trendArrow = market.trend === 'up' ? '↑' : market.trend === 'down' ? '↓' : '→'
 
   return (
     <div className="market-card" role="region" aria-label={`${title} market update`}>
       <div className="market-header">
-        <span className="market-icon" aria-hidden="true">{icon}</span>
+        <span className="market-icon" aria-hidden="true">
+          {icon}
+        </span>
         <h4 className="market-title">{title}</h4>
-        <span className="market-trend" style={{ color: trendColor }} aria-label={`Trend: ${market.trend}`}>
+        <span
+          className="market-trend"
+          style={{ color: trendColor }}
+          aria-label={`Trend: ${market.trend}`}
+        >
           {trendArrow} {market.trend.toUpperCase()}
         </span>
       </div>
@@ -249,20 +267,20 @@ function MarketCard({ market, title, icon }: MarketCardProps) {
         </ul>
       )}
     </div>
-  );
+  )
 }
 
 interface OpportunityCardProps {
   opportunity: {
-    category: string;
-    name: string;
-    description: string;
-    riskLevel: number;
-    expectedReturn: string;
-    timeHorizon: string;
-    action: 'buy' | 'hold' | 'sell' | 'watch';
-    reason: string;
-  };
+    category: string
+    name: string
+    description: string
+    riskLevel: number
+    expectedReturn: string
+    timeHorizon: string
+    action: 'buy' | 'hold' | 'sell' | 'watch'
+    reason: string
+  }
 }
 
 function OpportunityCard({ opportunity }: OpportunityCardProps) {
@@ -271,9 +289,10 @@ function OpportunityCard({ opportunity }: OpportunityCardProps) {
     hold: '#F59E0B',
     sell: '#EF4444',
     watch: '#6B7280',
-  };
+  }
 
-  const riskColor = opportunity.riskLevel <= 3 ? '#10B981' : opportunity.riskLevel <= 6 ? '#F59E0B' : '#EF4444';
+  const riskColor =
+    opportunity.riskLevel <= 3 ? '#10B981' : opportunity.riskLevel <= 6 ? '#F59E0B' : '#EF4444'
 
   return (
     <div className="opportunity-card">
@@ -315,5 +334,5 @@ function OpportunityCard({ opportunity }: OpportunityCardProps) {
         ⚠️ This is not financial advice. Do your own research.
       </div>
     </div>
-  );
+  )
 }

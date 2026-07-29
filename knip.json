@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": ["src/index.{ts,tsx,js,jsx}", "src/main.{ts,tsx,js,jsx}", "src/App.{ts,tsx}"],
+  "project": ["src/**/*.{ts,tsx,js,jsx}"],
+  "ignore": ["**/*.config.{js,ts,mjs,cjs}", "**/*.d.ts", "**/coverage/**"]
+}

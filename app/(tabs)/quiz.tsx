@@ -2,22 +2,15 @@
  * Quiz Screen - Risk profile assessment
  */
 
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
-import { useUser } from '@/contexts/UserContext';
-import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
+import React, { useState } from 'react'
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme'
+import { useUser } from '@/contexts/UserContext'
 
 export default function QuizScreen() {
-  const { riskProfile, setRiskProfile } = useUser();
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const { riskProfile, setRiskProfile } = useUser()
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [answers, setAnswers] = useState<Record<number, string>>({})
 
   const questions = [
     {
@@ -43,12 +36,7 @@ export default function QuizScreen() {
     {
       id: 3,
       question: 'What is your investment timeframe?',
-      options: [
-        'Less than 2 years',
-        '2-5 years',
-        '5-10 years',
-        'More than 10 years',
-      ],
+      options: ['Less than 2 years', '2-5 years', '5-10 years', 'More than 10 years'],
     },
     {
       id: 4,
@@ -60,46 +48,46 @@ export default function QuizScreen() {
         'Extensive (experienced investor)',
       ],
     },
-  ];
+  ]
 
   const handleAnswer = (answer: string) => {
-    setAnswers({ ...answers, [currentQuestion]: answer });
+    setAnswers({ ...answers, [currentQuestion]: answer })
 
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(currentQuestion + 1)
     } else {
-      calculateAndSaveProfile();
+      calculateAndSaveProfile()
     }
-  };
+  }
 
   const calculateAndSaveProfile = () => {
     // Simple calculation logic
     const conservativeCount = Object.values(answers).filter(
-      (a, i) => questions[i].options.indexOf(a) <= 1
-    ).length;
+      (a, i) => questions[i].options.indexOf(a) <= 1,
+    ).length
 
-    let profile: 'conservative' | 'moderate' | 'growth';
+    let profile: 'conservative' | 'moderate' | 'growth'
     if (conservativeCount >= 3) {
-      profile = 'conservative';
+      profile = 'conservative'
     } else if (conservativeCount >= 1) {
-      profile = 'moderate';
+      profile = 'moderate'
     } else {
-      profile = 'growth';
+      profile = 'growth'
     }
 
-    setRiskProfile(profile);
+    setRiskProfile(profile)
 
     Alert.alert(
       'Assessment Complete!',
       `Your risk profile is: ${profile.toUpperCase()}\n\nUma will now provide personalized recommendations based on your profile.`,
-      [{ text: 'OK', onPress: () => setCurrentQuestion(0) }]
-    );
-  };
+      [{ text: 'OK', onPress: () => setCurrentQuestion(0) }],
+    )
+  }
 
   const resetQuiz = () => {
-    setCurrentQuestion(0);
-    setAnswers({});
-  };
+    setCurrentQuestion(0)
+    setAnswers({})
+  }
 
   if (riskProfile) {
     return (
@@ -123,10 +111,10 @@ export default function QuizScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    );
+    )
   }
 
-  const progress = ((currentQuestion + 1) / questions.length) * 100;
+  const progress = ((currentQuestion + 1) / questions.length) * 100
 
   return (
     <ScrollView style={styles.container}>
@@ -164,7 +152,7 @@ export default function QuizScreen() {
         </TouchableOpacity>
       </View>
     </ScrollView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -269,4 +257,4 @@ const styles = StyleSheet.create({
     ...Typography.bodySmall,
     color: Colors.textSecondary,
   },
-});
+})

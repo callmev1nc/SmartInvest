@@ -1,17 +1,17 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import { UserProvider } from './contexts/UserContext';
-import { LanguageProvider } from './contexts/LanguageContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import './App.css';
+import { lazy, Suspense } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import Layout from './components/Layout'
+import { LanguageProvider } from './contexts/LanguageContext'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { UserProvider } from './contexts/UserContext'
+import './App.css'
 
 // Lazy load pages for better performance
-const Home = lazy(() => import('./pages/Home'));
-const Chat = lazy(() => import('./pages/Chat'));
-const Quiz = lazy(() => import('./pages/Quiz'));
-const Explore = lazy(() => import('./pages/Explore'));
+const Home = lazy(() => import('./pages/Home'))
+const Chat = lazy(() => import('./pages/Chat'))
+const Quiz = lazy(() => import('./pages/Quiz'))
+const Explore = lazy(() => import('./pages/Explore'))
 
 /**
  * Loading component shown while lazy-loaded components are being fetched
@@ -22,7 +22,7 @@ function LoadingFallback() {
       <div className="loading-spinner"></div>
       <p>Loading SmartInvest...</p>
     </div>
-  );
+  )
 }
 
 function App() {
@@ -31,8 +31,8 @@ function App() {
       onError={(error, errorInfo) => {
         // Log errors for debugging in development
         if (import.meta.env.DEV) {
-          console.error('Application Error:', error);
-          console.error('Component Stack:', errorInfo.componentStack);
+          console.error('Application Error:', error)
+          console.error('Component Stack:', errorInfo.componentStack)
         }
       }}
     >
@@ -55,7 +55,7 @@ function App() {
         </LanguageProvider>
       </ThemeProvider>
     </ErrorBoundary>
-  );
+  )
 }
 
-export default App;
+export default App

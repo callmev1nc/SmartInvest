@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+# Husky pre-commit — fast, staged-only. Biome (via lint-staged) + gitleaks secret scan.
+npx lint-staged
+
+# Secret scan on staged changes only (skips silently if gitleaks isn't installed).
+if command -v gitleaks >/dev/null 2>&1; then
+  if ! gitleaks git --pre-commit --staged --redact; then
+    echo ""
+    echo "gitleaks: potential secret detected in staged changes. Commit blocked."
+    echo "  Remove/redact the secret, or bypass at your own risk: git commit --no-verify"
+    exit 1
+  fi
+fi

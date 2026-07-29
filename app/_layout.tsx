@@ -2,10 +2,10 @@
  * Root Layout - Provides context providers for the entire app
  */
 
-import { Stack } from 'expo-router';
-import { UserProvider } from '@/contexts/UserContext';
-import { StatusBar } from 'expo-status-bar';
-import { Colors } from '@/constants/theme';
+import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+import { Colors } from '@/constants/theme'
+import { UserProvider } from '@/contexts/UserContext'
 
 export default function RootLayout() {
   return (
@@ -25,5 +25,5 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </UserProvider>
-  );
+  )
 }

@@ -39,7 +39,7 @@ export const API_CONFIG = {
    * Maximum retry attempts for failed API calls
    */
   MAX_RETRIES: 3,
-} as const;
+} as const
 
 /**
  * User Interface Configuration
@@ -80,7 +80,7 @@ export const UI_CONFIG = {
    * Maximum prompt length for AI API
    */
   MAX_PROMPT_LENGTH: 10000,
-} as const;
+} as const
 
 /**
  * Storage Configuration
@@ -107,7 +107,7 @@ export const STORAGE_CONFIG = {
    * Daily updates cache duration in milliseconds (1 hour)
    */
   DAILY_UPDATES_CACHE_DURATION: 60 * 60 * 1000,
-} as const;
+} as const
 
 /**
  * Validation Configuration
@@ -143,7 +143,7 @@ export const VALIDATION_CONFIG = {
     NAME_MAX: 50,
     QUIZ_ANSWERS_REQUIRED: 10,
   } as const,
-} as const;
+} as const
 
 /**
  * Animation Configuration
@@ -166,7 +166,7 @@ export const ANIMATION_CONFIG = {
     IN_OUT: 'cubic-bezier(0.4, 0, 0.6, 1)',
     BOUNCE: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
   } as const,
-} as const;
+} as const
 
 /**
  * Breakpoints for responsive design
@@ -177,7 +177,7 @@ export const BREAKPOINTS = {
   LG: 1024,
   XL: 1280,
   '2XL': 1536,
-} as const;
+} as const
 
 /**
  * Risk Level Configuration
@@ -196,11 +196,11 @@ export const RISK_CONFIG = {
    * Color mappings for risk levels
    */
   COLORS: {
-    LOW: '#10B981',      // Green
-    MEDIUM: '#F59E0B',   // Yellow/Orange
-    HIGH: '#EF4444',     // Red
+    LOW: '#10B981', // Green
+    MEDIUM: '#F59E0B', // Yellow/Orange
+    HIGH: '#EF4444', // Red
   } as const,
-} as const;
+} as const
 
 /**
  * Error Messages
@@ -211,7 +211,7 @@ export const ERROR_MESSAGES = {
   NETWORK_ERROR: 'Network error. Please check your internet connection.',
   INVALID_INPUT: 'Invalid input. Please try again.',
   SAVE_FAILED: 'Failed to save data. Please try again.',
-} as const;
+} as const
 
 /**
  * Feature Flags
@@ -237,9 +237,9 @@ export const FEATURES = {
    * Show debug information in development
    */
   get DEBUG_MODE(): boolean {
-    return import.meta.env.DEV;
+    return import.meta.env.DEV
   },
-} as const;
+} as const
 
 /**
  * Default values for user preferences
@@ -248,4 +248,4 @@ export const DEFAULTS = {
   THEME: 'light' as const,
   LANGUAGE: 'en' as const,
   RISK_PROFILE: null,
-} as const;
+} as const

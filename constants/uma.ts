@@ -8,7 +8,7 @@ export const UMA_CONFIG = {
   title: 'Your Personal AI Investment Advisor',
   model: 'gemini-2.0-flash-exp',
   thinkingLevel: 'HIGH' as const,
-};
+}
 
 /**
  * Uma's base system prompt - defines her personality and behavior
@@ -45,7 +45,7 @@ export const UMA_SYSTEM_PROMPT = `You are Uma, a friendly and professional AI in
 7. Never promise guaranteed returns
 
 ## Disclaimer to Include
-"Please note: I'm an AI assistant and this is for educational purposes only. All investments carry risk. Consider consulting a licensed financial advisor for personalized advice."`;
+"Please note: I'm an AI assistant and this is for educational purposes only. All investments carry risk. Consider consulting a licensed financial advisor for personalized advice."`
 
 /**
  * Welcome messages for first-time users
@@ -54,29 +54,29 @@ export const UMA_WELCOME_MESSAGES = [
   "Hi {name}! I'm Uma, your personal AI investment advisor. I'm here to help you make smart investment decisions. What would you like to know?",
   "Hello {name}! Welcome to SmartINvest! I'm Uma, and I'll be your guide on your investment journey. What's on your mind today?",
   "Hey {name}! Great to meet you! I'm Uma, your AI investment advisor. Feel free to ask me anything about investing!",
-];
+]
 
 /**
  * Greetings to use throughout conversations
  */
 export const UMA_GREETINGS = [
-  "Hi {name}!",
-  "Hello {name}!",
-  "Hey {name}!",
-  "Great to hear from you, {name}!",
-];
+  'Hi {name}!',
+  'Hello {name}!',
+  'Hey {name}!',
+  'Great to hear from you, {name}!',
+]
 
 /**
  * Suggested questions for users to ask
  */
 export const UMA_SUGGESTED_QUESTIONS = [
-  "What should I invest in with $1000?",
+  'What should I invest in with $1000?',
   "What's the difference between stocks and bonds?",
-  "How do I get started with investing?",
+  'How do I get started with investing?',
   "What's a conservative investment strategy?",
-  "Should I invest in ETFs or individual stocks?",
-  "How do I assess my risk tolerance?",
-];
+  'Should I invest in ETFs or individual stocks?',
+  'How do I assess my risk tolerance?',
+]
 
 /**
  * Risk profile descriptions for Uma to reference
@@ -85,7 +85,12 @@ export const RISK_PROFILES = {
   conservative: {
     name: 'Conservative',
     description: 'Prioritizes capital preservation with lower risk investments',
-    focus: ['Fixed deposits', 'Money market funds', 'Government bonds', 'Blue-chip dividend stocks'],
+    focus: [
+      'Fixed deposits',
+      'Money market funds',
+      'Government bonds',
+      'Blue-chip dividend stocks',
+    ],
   },
   moderate: {
     name: 'Moderate',
@@ -95,22 +100,27 @@ export const RISK_PROFILES = {
   growth: {
     name: 'Growth-Oriented',
     description: 'Seeks higher returns with higher risk tolerance',
-    focus: ['Growth stocks', 'Emerging markets', 'Sector-specific funds', 'Aggressive mutual funds'],
+    focus: [
+      'Growth stocks',
+      'Emerging markets',
+      'Sector-specific funds',
+      'Aggressive mutual funds',
+    ],
   },
-};
+}
 
 /**
  * Helper function to get a personalized welcome message
  */
 export function getWelcomeMessage(userName: string): string {
-  const randomIndex = Math.floor(Math.random() * UMA_WELCOME_MESSAGES.length);
-  return UMA_WELCOME_MESSAGES[randomIndex].replace('{name}', userName);
+  const randomIndex = Math.floor(Math.random() * UMA_WELCOME_MESSAGES.length)
+  return UMA_WELCOME_MESSAGES[randomIndex].replace('{name}', userName)
 }
 
 /**
  * Helper function to get a personalized greeting
  */
 export function getGreeting(userName: string): string {
-  const randomIndex = Math.floor(Math.random() * UMA_GREETINGS.length);
-  return UMA_GREETINGS[randomIndex].replace('{name}', userName);
+  const randomIndex = Math.floor(Math.random() * UMA_GREETINGS.length)
+  return UMA_GREETINGS[randomIndex].replace('{name}', userName)
 }

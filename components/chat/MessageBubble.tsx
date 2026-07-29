@@ -2,78 +2,59 @@
  * MessageBubble - Individual message component for chat interface
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { Colors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/theme';
+import React from 'react'
+import { StyleSheet, Text, View, type ViewStyle } from 'react-native'
+import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme'
 
 export interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
 }
 
 interface MessageBubbleProps {
-  message: Message;
-  userName?: string;
+  message: Message
+  userName?: string
 }
 
 export function MessageBubble({ message, userName }: MessageBubbleProps) {
-  const isUser = message.role === 'user';
+  const isUser = message.role === 'user'
 
   return (
-    <View
-      style={[
-        styles.container,
-        isUser ? styles.userContainer : styles.assistantContainer,
-      ]}
-    >
+    <View style={[styles.container, isUser ? styles.userContainer : styles.assistantContainer]}>
       {/* Name label for Uma */}
-      {!isUser && (
-        <Text style={styles.senderName}>Uma</Text>
-      )}
+      {!isUser && <Text style={styles.senderName}>Uma</Text>}
 
-      <View
-        style={[
-          styles.bubble,
-          isUser ? styles.userBubble : styles.assistantBubble,
-        ]}
-      >
-        <Text
-          style={[
-            styles.messageText,
-            isUser ? styles.userText : styles.assistantText,
-          ]}
-        >
+      <View style={[styles.bubble, isUser ? styles.userBubble : styles.assistantBubble]}>
+        <Text style={[styles.messageText, isUser ? styles.userText : styles.assistantText]}>
           {message.content}
         </Text>
       </View>
 
       {/* Timestamp */}
-      <Text style={styles.timestamp}>
-        {formatTime(message.timestamp)}
-      </Text>
+      <Text style={styles.timestamp}>{formatTime(message.timestamp)}</Text>
     </View>
-  );
+  )
 }
 
 /**
  * Format timestamp for display
  */
 function formatTime(date: Date): string {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const minutes = Math.floor(diff / 60000);
+  const now = new Date()
+  const diff = now.getTime() - date.getTime()
+  const minutes = Math.floor(diff / 60000)
 
   if (minutes < 1) {
-    return 'Just now';
+    return 'Just now'
   } else if (minutes < 60) {
-    return `${minutes}m ago`;
+    return `${minutes}m ago`
   } else if (minutes < 1440) {
-    const hours = Math.floor(minutes / 60);
-    return `${hours}h ago`;
+    const hours = Math.floor(minutes / 60)
+    return `${hours}h ago`
   } else {
-    return date.toLocaleDateString();
+    return date.toLocaleDateString()
   }
 }
 
@@ -125,6 +106,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
     marginHorizontal: Spacing.sm,
   },
-});
+})
 
-export default MessageBubble;
+export default MessageBubble
