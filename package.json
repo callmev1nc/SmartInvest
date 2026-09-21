@@ -39,7 +39,7 @@
     "jsdom": "^28.1.0",
     "knip": "^6.0.0",
     "lint-staged": "^15.2.0",
-    "typescript": "^5.4.0",
+    "typescript": "^7.0.2",
     "vite": "^5.2.0",
     "vitest": "^4.0.18"
   },
