@@ -47,7 +47,7 @@ jobs:
         with:
           fetch-depth: 0
       # gitleaks: secrets in git history + working tree.
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # osv-scanner: dependency CVEs (npm + pip). Free, no API key. (Drops npm audit / Snyk / Trivy.)
